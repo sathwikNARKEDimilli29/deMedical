@@ -1,0 +1,50 @@
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant MetaMask
+    participant Backend
+    participant MongoDB
+    participant CreditContract
+    participant LoanContract
+    
+    User->>Frontend: Navigate to Loans
+    Frontend->>Backend: GET /api/credit/:address
+    Backend->>MongoDB: Fetch credit history
+    MongoDB-->>Backend: Credit data
+    Backend-->>Frontend: Credit score: 650
+    
+    Frontend->>User: Display credit score<br/>& eligible rate (12%)
+    User->>Frontend: Click "Apply for Loan"
+    
+    User->>Frontend: Fill loan form:<br/>- Amount: 1 ETH<br/>- Duration: 90 days<br/>- Purpose: Surgery
+    User->>Frontend: Upload medical bills
+    
+    Frontend->>Backend: POST /api/ipfs/upload
+    Backend->>IPFS: Upload documents
+    IPFS-->>Backend: IPFS hash
+    Backend-->>Frontend: Document hash
+    
+    Frontend->>MetaMask: Request requestLoan() tx
+    MetaMask->>User: Confirm transaction?
+    User->>MetaMask: Approve
+    
+    MetaMask->>LoanContract: requestLoan(1 ETH, 90 days, hash)
+    
+    LoanContract->>CreditContract: getCreditScore(user)
+    CreditContract-->>LoanContract: Score: 650
+    
+    LoanContract->>LoanContract: Check min score (400)
+    LoanContract->>LoanContract: Calculate interest (12%)
+    LoanContract->>LoanContract: Check pool balance
+    
+    LoanContract->>LoanContract: Auto-approve loan
+    LoanContract->>LoanContract: Transfer 1 ETH to user
+    LoanContract-->>MetaMask: Transaction confirmed
+    
+    MetaMask-->>Frontend: Loan approved
+    Frontend->>Backend: POST /api/loans
+    Backend->>MongoDB: Save loan record
+    MongoDB-->>Backend: Success
+    
+    Backend-->>Frontend: Loan details
+    Frontend->>User: Show loan approved!<br/>Funds transferred

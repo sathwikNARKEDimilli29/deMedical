@@ -1,0 +1,81 @@
+erDiagram
+    User ||--o{ Pool : "joins"
+    User ||--o{ Claim : "submits"
+    User ||--o{ Loan : "applies for"
+    User ||--|| CreditHistory : "has"
+    Pool ||--o{ Claim : "contains"
+    
+    User {
+        ObjectId _id PK
+        string walletAddress UK
+        string email
+        string password
+        string fullName
+        string phone
+        date dateOfBirth
+        boolean isKYCVerified
+        string kycDocuments
+        string profileImage
+        date createdAt
+        date lastLogin
+    }
+    
+    Pool {
+        ObjectId _id PK
+        number poolId UK
+        string name
+        string description
+        string creator FK
+        enum poolType
+        string targetAmount
+        string currentAmount
+        number memberCount
+        number maxMembers
+        boolean isActive
+        array members
+        object analytics
+        date createdAt
+    }
+    
+    Claim {
+        ObjectId _id PK
+        number claimId UK
+        number poolId FK
+        string claimant FK
+        string amount
+        string description
+        string documents
+        enum status
+        number approvalCount
+        number rejectionCount
+        array votes
+        date submittedAt
+        date processedAt
+    }
+    
+    Loan {
+        ObjectId _id PK
+        number loanId UK
+        string borrower FK
+        string principal
+        number interestRate
+        number duration
+        string amountRepaid
+        enum status
+        string purpose
+        string documents
+        date startDate
+        date dueDate
+        array repayments
+    }
+    
+    CreditHistory {
+        ObjectId _id PK
+        string userAddress UK
+        number currentScore
+        array scoreHistory
+        object factors
+        enum tier
+        date createdAt
+        date updatedAt
+    }

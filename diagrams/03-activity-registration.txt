@@ -1,0 +1,36 @@
+flowchart TD
+    Start([User Visits Platform]) --> ConnectWallet{Has MetaMask?}
+    
+    ConnectWallet -->|No| InstallMM[Install MetaMask]
+    InstallMM --> SetupWallet[Create/Import Wallet]
+    SetupWallet --> ConnectWallet
+    
+    ConnectWallet -->|Yes| RequestConn[Click Connect Wallet]
+    RequestConn --> MMPopup[MetaMask Popup Appears]
+    MMPopup --> Approve{User Approves?}
+    
+    Approve -->|No| End1([Connection Cancelled])
+    Approve -->|Yes| CheckUser{User Exists?}
+    
+    CheckUser -->|Yes| Login[Auto Login]
+    Login --> Dashboard([Redirect to Dashboard])
+    
+    CheckUser -->|No| RegForm[Show Registration Form]
+    RegForm --> FillForm[Fill Details:<br/>Name, Email, Phone, DOB]
+    FillForm --> UploadDocs[Upload KYC Documents<br/>to IPFS]
+    UploadDocs --> GetHash[Get IPFS Hash]
+    GetHash --> CallContract[Call registerUser()<br/>on UserRegistry]
+    CallContract --> MMSign[MetaMask Sign Transaction]
+    MMSign --> UserApprove{Approve?}
+    
+    UserApprove -->|No| End2([Registration Cancelled])
+    UserApprove -->|Yes| BlockchainTx[Transaction on Blockchain]
+    BlockchainTx --> DBSave[Save User in MongoDB]
+    DBSave --> CreateJWT[Generate JWT Token]
+    CreateJWT --> InitCredit[Initialize Credit Score<br/>Default: 500]
+    InitCredit --> Dashboard
+    
+    style Start fill:#e1f5ff
+    style Dashboard fill:#c8e6c9
+    style End1 fill:#ffcdd2
+    style End2 fill:#ffcdd2

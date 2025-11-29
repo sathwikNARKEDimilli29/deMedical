@@ -1,0 +1,44 @@
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant MetaMask
+    participant Backend
+    participant MongoDB
+    participant Blockchain
+    participant PoolContract
+    
+    User->>Frontend: Click "Join Pool"
+    Frontend->>Backend: GET /api/pools/:poolId
+    Backend->>MongoDB: Find pool details
+    MongoDB-->>Backend: Pool data
+    Backend-->>Frontend: Pool information
+    
+    Frontend->>User: Display pool details<br/>& contribution form
+    User->>Frontend: Enter contribution (0.5 ETH)
+    
+    Frontend->>MetaMask: Request joinPool() transaction
+    MetaMask->>User: Confirm transaction?
+    User->>MetaMask: Approve
+    
+    MetaMask->>Blockchain: Submit transaction
+    Blockchain->>PoolContract: joinPool(poolId) {value: 0.5 ETH}
+    
+    PoolContract->>PoolContract: Verify KYC status
+    PoolContract->>PoolContract: Check pool not full
+    PoolContract->>PoolContract: Check min contribution
+    
+    PoolContract->>PoolContract: Add member to pool
+    PoolContract->>PoolContract: Update pool balance
+    PoolContract->>PoolContract: Increment member count
+    
+    PoolContract-->>Blockchain: Emit MemberJoined event
+    Blockchain-->>MetaMask: Transaction confirmed
+    MetaMask-->>Frontend: Transaction hash
+    
+    Frontend->>Backend: POST /api/pools/:poolId/members
+    Backend->>MongoDB: Update pool members
+    MongoDB-->>Backend: Success
+    Backend-->>Frontend: Updated pool data
+    
+    Frontend->>User: Show success message
+    Frontend->>User: Update dashboard

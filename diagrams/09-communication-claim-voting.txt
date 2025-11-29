@@ -1,0 +1,40 @@
+graph LR
+    User([Pool Member])
+    Frontend[Frontend App]
+    Backend[Backend API]
+    Blockchain[Blockchain Network]
+    PoolContract[InsurancePool<br/>Contract]
+    MongoDB[(MongoDB)]
+    
+    User -->|1: View pending claim| Frontend
+    Frontend -->|2: GET /api/claims/:id| Backend
+    Backend -->|3: Query claim| MongoDB
+    MongoDB -->|4: Claim details| Backend
+    Backend -->|5: Claim data + docs| Frontend
+    Frontend -->|6: Display claim| User
+    
+    User -->|7: Vote (Approve/Reject)| Frontend
+    Frontend -->|8: voteClaim(claimId, vote)| Blockchain
+    Blockchain -->|9: Execute transaction| PoolContract
+    
+    PoolContract -->|10: Verify member| PoolContract
+    PoolContract -->|11: Check not voted| PoolContract
+    PoolContract -->|12: Record vote| PoolContract
+    PoolContract -->|13: Update counts| PoolContract
+    
+    PoolContract -->|14: Check threshold| PoolContract
+    PoolContract -->|15: Calculate result| PoolContract
+    PoolContract -->|16: Update status| PoolContract
+    
+    PoolContract -->|17: Emit event| Blockchain
+    Blockchain -->|18: Transaction receipt| Frontend
+    
+    Frontend -->|19: POST /api/claims/:id| Backend
+    Backend -->|20: Update vote record| MongoDB
+    MongoDB -->|21: Confirm| Backend
+    Backend -->|22: Success| Frontend
+    Frontend -->|23: Show result| User
+    
+    style User fill:#e1f5ff
+    style MongoDB fill:#fff9c4
+    style PoolContract fill:#c8e6c9

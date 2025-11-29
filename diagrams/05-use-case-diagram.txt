@@ -1,0 +1,93 @@
+graph TB
+    subgraph "De-Medical Platform"
+        subgraph "User Management"
+            UC1[Register Account]
+            UC2[Login with Wallet]
+            UC3[Update Profile]
+            UC4[Upload KYC Documents]
+        end
+        
+        subgraph "Insurance Pools"
+            UC5[Create Pool]
+            UC6[Join Pool]
+            UC7[Contribute to Pool]
+            UC8[View Pool Details]
+        end
+        
+        subgraph "Claims"
+            UC9[Submit Claim]
+            UC10[Vote on Claim]
+            UC11[Track Claim Status]
+            UC12[Receive Payout]
+        end
+        
+        subgraph "Loans"
+            UC13[Apply for Loan]
+            UC14[Repay Loan]
+            UC15[Check Eligibility]
+        end
+        
+        subgraph "Credit Score"
+            UC16[View Credit Score]
+            UC17[Track Payment History]
+            UC18[Improve Score]
+        end
+        
+        subgraph "Payment Plans"
+            UC19[Create BNPL Plan]
+            UC20[Pay Installment]
+            UC21[Create SNPL Plan]
+            UC22[Make Deposit]
+        end
+        
+        subgraph "AI Assistant"
+            UC23[Chat with AI]
+            UC24[Get Recommendations]
+        end
+    end
+    
+    User((User)) --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+    User --> UC7
+    User --> UC8
+    User --> UC9
+    User --> UC10
+    User --> UC11
+    User --> UC12
+    User --> UC13
+    User --> UC14
+    User --> UC15
+    User --> UC16
+    User --> UC17
+    User --> UC18
+    User --> UC19
+    User --> UC20
+    User --> UC21
+    User --> UC22
+    User --> UC23
+    User --> UC24
+    
+    Admin((Admin/KYC<br/>Verifier)) --> UC4
+    Admin --> UC10
+    
+    SmartContract((Smart<br/>Contracts)) -.-> UC1
+    SmartContract -.-> UC6
+    SmartContract -.-> UC9
+    SmartContract -.-> UC10
+    SmartContract -.-> UC13
+    SmartContract -.-> UC14
+    SmartContract -.-> UC19
+    SmartContract -.-> UC21
+    
+    Backend((Backend<br/>API)) -.-> UC2
+    Backend -.-> UC3
+    Backend -.-> UC16
+    Backend -.-> UC23
+    Backend -.-> UC24
+    
+    IPFS((IPFS<br/>Storage)) -.-> UC4
+    IPFS -.-> UC9

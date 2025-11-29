@@ -1,0 +1,44 @@
+flowchart TD
+    Start([Pool Member]) --> Medical[Medical Emergency]
+    Medical --> GatherDocs[Gather Medical Bills<br/>& Documents]
+    GatherDocs --> UploadIPFS[Upload to IPFS]
+    UploadIPFS --> GetHash[Receive IPFS Hash]
+    GetHash --> FillForm[Fill Claim Form:<br/>- Pool ID<br/>- Amount<br/>- Description]
+    FillForm --> Submit[Submit Claim]
+    Submit --> CallContract[Call submitClaim()<br/>on InsurancePool]
+    CallContract --> MMSign[MetaMask Transaction]
+    MMSign --> BlockchainTx[Claim Recorded<br/>Status: PENDING]
+    BlockchainTx --> NotifyMembers[Notify Pool Members]
+    
+    NotifyMembers --> MemberVote{Pool Members<br/>Vote}
+    MemberVote --> ReviewDocs[Review Documents]
+    ReviewDocs --> VoteDecision{Approve?}
+    
+    VoteDecision -->|Yes| ApproveVote[Cast Approve Vote]
+    VoteDecision -->|No| RejectVote[Cast Reject Vote]
+    
+    ApproveVote --> RecordVote[Record Vote on Chain]
+    RejectVote --> RecordVote
+    
+    RecordVote --> CheckThreshold{50% Voted?}
+    CheckThreshold -->|No| WaitMore[Wait for More Votes]
+    WaitMore --> MemberVote
+    
+    CheckThreshold -->|Yes| CalcResult{Approval >= 60%?}
+    
+    CalcResult -->|Yes| Approved[Status: APPROVED]
+    CalcResult -->|No| Rejected[Status: REJECTED]
+    
+    Approved --> ProcessClaim[processClaim() Called]
+    ProcessClaim --> CalcPayout[Calculate Proportional<br/>Payout Based on<br/>Contribution %]
+    CalcPayout --> Transfer[Transfer Funds<br/>to Claimant]
+    Transfer --> UpdateStatus[Status: PAID]
+    UpdateStatus --> UpdatePool[Update Pool Balance]
+    UpdatePool --> EndSuccess([Claim Paid])
+    
+    Rejected --> NotifyRejected[Notify Claimant]
+    NotifyRejected --> EndRejected([Claim Rejected])
+    
+    style Start fill:#e1f5ff
+    style EndSuccess fill:#c8e6c9
+    style EndRejected fill:#ffcdd2

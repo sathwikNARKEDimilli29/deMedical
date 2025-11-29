@@ -1,0 +1,67 @@
+graph TB
+    subgraph "Frontend Layer"
+        NextJS[Next.js 14 App]
+        Components[React Components]
+        Web3Lib[ethers.js]
+        UILib[TailwindCSS + Framer Motion]
+    end
+    
+    subgraph "Backend Layer"
+        Express[Express.js Server]
+        AuthService[Auth Service]
+        PoolService[Pool Service]
+        LoanService[Loan Service]
+        IPFSService[IPFS Service]
+        AIService[AI Service]
+    end
+    
+    subgraph "Database Layer"
+        MongoDB[(MongoDB)]
+        IPFS[(IPFS/Pinata)]
+    end
+    
+    subgraph "Blockchain Layer"
+        Network[Hardhat Network<br/>localhost:8545]
+        UserReg[UserRegistry]
+        Credit[CreditScore]
+        Pool[InsurancePool]
+        Loan[MicroLoan]
+        Payment[PaymentPlan]
+    end
+    
+    NextJS --> Components
+    Components --> Web3Lib
+    Components --> UILib
+    
+    NextJS <-->|REST API| Express
+    Web3Lib <-->|JSON-RPC| Network
+    
+    Express --> AuthService
+    Express --> PoolService
+    Express --> LoanService
+    Express --> IPFSService
+    Express --> AIService
+    
+    AuthService <--> MongoDB
+    PoolService <--> MongoDB
+    LoanService <--> MongoDB
+    IPFSService <--> IPFS
+    
+    Network --> UserReg
+    Network --> Credit
+    Network --> Pool
+    Network --> Loan
+    Network --> Payment
+    
+    UserReg -.depends.-> Credit
+    Pool -.uses.-> UserReg
+    Pool -.uses.-> Credit
+    Loan -.uses.-> UserReg
+    Loan -.uses.-> Credit
+    Payment -.uses.-> UserReg
+    Payment -.uses.-> Credit
+    
+    style NextJS fill:#61dafb
+    style Express fill:#68a063
+    style MongoDB fill:#4db33d
+    style Network fill:#f0b90b

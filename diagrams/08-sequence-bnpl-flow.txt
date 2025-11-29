@@ -1,0 +1,48 @@
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant MetaMask
+    participant PaymentContract
+    participant CreditContract
+    participant Backend
+    
+    User->>Frontend: Request BNPL for<br/>medical expense (2 ETH)
+    Frontend->>Backend: GET /api/credit/:address
+    Backend-->>Frontend: Credit score: 500
+    
+    Frontend->>User: Show BNPL options:<br/>6 installments, 10% interest
+    User->>Frontend: Confirm BNPL plan
+    
+    Frontend->>MetaMask: createBNPL(2 ETH, 6 months)
+    MetaMask->>PaymentContract: Transaction submitted
+    
+    PaymentContract->>CreditContract: getCreditScore(user)
+    CreditContract-->>PaymentContract: 500
+    PaymentContract->>PaymentContract: Check min score (450) ✓
+    PaymentContract->>PaymentContract: Calculate interest (10%)
+    PaymentContract->>PaymentContract: Total: 2.2 ETH
+    PaymentContract->>PaymentContract: Per installment: 0.367 ETH
+    
+    PaymentContract->>PaymentContract: Create BNPL plan
+    PaymentContract->>User: Transfer 2 ETH
+    PaymentContract-->>MetaMask: Plan created
+    
+    MetaMask-->>Frontend: Success
+    Frontend->>User: BNPL activated!<br/>First payment due in 30 days
+    
+    Note over User,PaymentContract: 30 days later...
+    
+    User->>Frontend: Pay installment
+    Frontend->>MetaMask: payBNPLInstallment(planId)
+    User->>MetaMask: Send 0.367 ETH
+    
+    MetaMask->>PaymentContract: Payment received
+    PaymentContract->>PaymentContract: Check if on time ✓
+    PaymentContract->>PaymentContract: Update plan
+    PaymentContract->>CreditContract: recordPayment(user, true)
+    
+    CreditContract->>CreditContract: Update credit score
+    CreditContract-->>PaymentContract: Score updated
+    PaymentContract-->>Frontend: Payment successful
+    
+    Frontend->>User: Installment paid!<br/>Credit score +5

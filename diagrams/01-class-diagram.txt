@@ -1,0 +1,107 @@
+classDiagram
+    class UserRegistry {
+        +mapping users
+        +mapping kycVerifiers
+        +address owner
+        +registerUser(string ipfsHash)
+        +verifyKYC(address user)
+        +revokeKYC(address user)
+        +isUserKYCVerified(address user) bool
+        +getUserInfo(address user) User
+    }
+    
+    class CreditScore {
+        +mapping creditScores
+        +mapping authorizedContracts
+        +UserRegistry userRegistry
+        +uint256 MIN_SCORE
+        +uint256 MAX_SCORE
+        +uint256 DEFAULT_SCORE
+        +initializeCreditScore(address user)
+        +recordPayment(address user, bool onTime)
+        +recordLoan(address user, bool repaid)
+        +getCreditScore(address user) uint256
+        +getCreditTier(address user) string
+    }
+    
+    class InsurancePool {
+        +mapping pools
+        +mapping poolMembers
+        +UserRegistry userRegistry
+        +CreditScore creditScore
+        +uint256 poolCount
+        +uint256 claimCount
+        +createPool(...) uint256
+        +joinPool(uint256 poolId) payable
+        +submitClaim(...) uint256
+        +voteClaim(uint256 claimId, bool approve)
+        +processClaim(uint256 claimId)
+    }
+    
+    class MicroLoan {
+        +mapping loans
+        +mapping borrowerLoans
+        +UserRegistry userRegistry
+        +CreditScore creditScore
+        +uint256 loanCount
+        +uint256 poolBalance
+        +requestLoan(...) uint256
+        +repayLoan(uint256 loanId) payable
+        +calculateInterestRate(uint256 score) uint256
+        +calculateTotalOwed(uint256 loanId) uint256
+    }
+    
+    class PaymentPlan {
+        +mapping bnplPlans
+        +mapping snplPlans
+        +UserRegistry userRegistry
+        +CreditScore creditScore
+        +uint256 bnplCount
+        +uint256 snplCount
+        +createBNPL(...) uint256
+        +payBNPLInstallment(uint256 planId) payable
+        +createSNPL(...) uint256
+        +depositToSNPL(uint256 planId) payable
+    }
+    
+    class Pool {
+        +uint256 id
+        +string name
+        +address creator
+        +uint256 targetAmount
+        +uint256 totalContributed
+        +uint256 memberCount
+        +PoolType poolType
+        +bool isActive
+    }
+    
+    class Claim {
+        +uint256 id
+        +uint256 poolId
+        +address claimant
+        +uint256 amount
+        +ClaimStatus status
+        +uint256 approvalCount
+        +uint256 rejectionCount
+    }
+    
+    class Loan {
+        +uint256 id
+        +address borrower
+        +uint256 principal
+        +uint256 interestRate
+        +uint256 duration
+        +uint256 amountRepaid
+        +LoanStatus status
+    }
+
+    UserRegistry <-- CreditScore : depends on
+    UserRegistry <-- InsurancePool : depends on
+    UserRegistry <-- MicroLoan : depends on
+    UserRegistry <-- PaymentPlan : depends on
+    CreditScore <-- InsurancePool : uses
+    CreditScore <-- MicroLoan : uses
+    CreditScore <-- PaymentPlan : uses
+    InsurancePool "1" *-- "many" Pool : contains
+    InsurancePool "1" *-- "many" Claim : manages
+    MicroLoan "1" *-- "many" Loan : manages

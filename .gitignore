@@ -106,5 +106,5 @@ test-results/
 playwright-report/
 
 # Mermaid Diagrams (generated documentation)
-diagrams/
+# diagrams/
 

@@ -1,0 +1,43 @@
+graph TB
+    subgraph "Client Browser"
+        Browser[Web Browser<br/>+ MetaMask]
+    end
+    
+    subgraph "Frontend Server - Port 3000"
+        Next[Next.js Server<br/>SSR + SSG]
+        Static[Static Assets<br/>CSS, JS, Images]
+    end
+    
+    subgraph "Backend Server - Port 5000"
+        API[Express API Server]
+        Routes[API Routes]
+        Services[Business Logic]
+    end
+    
+    subgraph "Database Services"
+        Mongo[(MongoDB<br/>Port 27017)]
+        IPFSNode[(IPFS/Pinata<br/>Cloud Storage)]
+    end
+    
+    subgraph "Blockchain Network - Port 8545"
+        Hardhat[Hardhat Node<br/>Local Blockchain]
+        Contracts[Deployed Contracts<br/>5 Smart Contracts]
+    end
+    
+    Browser <-->|HTTPS| Next
+    Next --> Static
+    Browser <-->|REST API<br/>HTTP/WS| API
+    Browser <-->|JSON-RPC<br/>Web3| Hardhat
+    
+    API --> Routes
+    Routes --> Services
+    Services <--> Mongo
+    Services <--> IPFSNode
+    
+    Hardhat --> Contracts
+    
+    style Browser fill:#e1f5ff
+    style Next fill:#61dafb
+    style API fill:#68a063
+    style Mongo fill:#4db33d
+    style Hardhat fill:#f0b90b
