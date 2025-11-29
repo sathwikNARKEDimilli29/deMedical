@@ -104,3 +104,7 @@ data/
 # Test artifacts
 test-results/
 playwright-report/
+
+# Mermaid Diagrams (generated documentation)
+diagrams/
+
