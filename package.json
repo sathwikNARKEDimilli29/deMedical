@@ -1,7 +1,7 @@
 {
-  "name": "de-medical-insurance",
+  "name": "nishkama",
   "version": "1.0.0",
-  "description": "Blockchain-powered insurance platform with pooled contributions and micro-loans",
+  "description": "Blockchain-powered healthcare insurance platform",
   "main": "index.js",
   "scripts": {
     "test": "hardhat test",
@@ -19,7 +19,7 @@
     "healthcare",
     "micro-loans"
   ],
-  "author": "",
+  "author": "Sathwik Narkedimilli",
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",

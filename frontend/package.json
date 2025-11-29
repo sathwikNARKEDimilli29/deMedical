@@ -1,6 +1,7 @@
 {
-    "name": "de-medical-frontend",
+    "name": "nishkama-frontend",
     "version": "1.0.0",
+    "description": "Next.js frontend for Nishkama platform",
     "private": true,
     "scripts": {
         "dev": "next dev",

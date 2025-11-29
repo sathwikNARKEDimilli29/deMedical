@@ -1,14 +1,14 @@
 {
-    "name": "de-medical-backend",
+    "name": "nishkama-backend",
     "version": "1.0.0",
-    "description": "Backend services for De-Medical platform",
+    "description": "Backend API for Nishkama blockchain insurance platform",
     "main": "server.js",
     "scripts": {
         "dev": "nodemon server.js",
         "start": "node server.js"
     },
     "keywords": [],
-    "author": "",
+    "author": "Sathwik Narkedimilli",
     "license": "MIT",
     "dependencies": {
         "express": "^4.18.2",

@@ -1,8 +1,8 @@
-# De-Medical Platform - Complete Application Summary & LLM Prompt
+# Nishkama Platform - Complete Application Summary & LLM Prompt
 
 ## 📋 Application Overview
 
-**Name**: De-Medical  
+**Name**: Nishkama  
 **Type**: Blockchain-Powered Healthcare Insurance Platform  
 **Target Audience**: Middle-class individuals seeking affordable healthcare coverage  
 **Core Innovation**: Pooled insurance with proportional contributions and claims, integrated with micro-loans and flexible payment plans
@@ -220,4 +220,4 @@ De-Medical/
 
 ---
 
-**This document provides complete understanding of the De-Medical platform for LLM prompting or technical documentation.**
+**This document provides complete understanding of the Nishkama platform for LLM prompting or technical documentation.**

@@ -1,4 +1,4 @@
-# De-Medical - Blockchain Insurance Platform
+# Nishkama - Blockchain Insurance Platform
 
 A revolutionary blockchain-powered healthcare insurance platform featuring pooled contributions, micro-loans, credit scoring, and innovative payment solutions.
 
@@ -74,7 +74,7 @@ PRIVATE_KEY=your_private_key_here
 
 # Backend Configuration
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/de-medical
+MONGODB_URI=mongodb://localhost:27017/nishkama
 JWT_SECRET=change_this_to_random_secret_key_min_32_chars
 JWT_EXPIRES_IN=7d
 
@@ -136,7 +136,7 @@ sudo systemctl start mongodb
 4. Get connection string
 5. Update `MONGODB_URI` in `.env`
 
-Example: `mongodb+srv://username:password@cluster.mongodb.net/de-medical`
+Example: `mongodb+srv://username:password@cluster.mongodb.net/nishkama`
 
 **Verify MongoDB is running:**
 ```bash
