@@ -27,7 +27,7 @@ This directory contains comprehensive technical documentation, analysis reports,
 ### 2. Security Audit Report
 **File**: `02-security-audit-report.md`  
 **Format**: Markdown  
-**Description**: Comprehensive security analysis of all 5 smart contracts including:
+**Description**: Comprehensive security analysis of all 6 smart contracts including:
 - Executive summary with risk ratings
 - Contract-by-contract security analysis
 - 18 identified issues (0 Critical, 0 High, 4 Medium, 6 Low, 8 Informational)
@@ -44,8 +44,9 @@ This directory contains comprehensive technical documentation, analysis reports,
 1. UserRegistry.sol
 2. CreditScore.sol
 3. InsurancePool.sol
-4. MicroLoan.sol
+4. MicroLoan.sol (Enhanced with 4 loan types)
 5. PaymentPlan.sol
+6. BugBounty.sol (Security vulnerability reporting)
 
 ---
 
@@ -98,6 +99,52 @@ This directory contains comprehensive technical documentation, analysis reports,
 2. Struct variable packing (-15,000 gas)
 3. Use events instead of storage (-35,000 gas)
 4. Batch state updates (-40,000 gas)
+
+---
+
+## 🔐 Enhanced Security Features
+
+### New Smart Contract: BugBounty.sol
+**Purpose**: Decentralized bug bounty program to incentivize security research
+
+**Key Features**:
+- **5 Severity Levels**: Critical ($50,000), High ($10,000), Medium ($5,000), Low ($1,000), Informational ($200)
+- **Researcher Management**: Registration, profile tracking, leaderboard system
+- **Report Lifecycle**: Submission, validation, approval, reward distribution
+- **Security Focus**: Encourages continuous security assessment by white-hat researchers
+
+### Enhanced MicroLoan.sol Features
+**4 Loan Types** with different risk profiles and interest rates:
+
+1. **Unsecured Loans**: Traditional credit-based loans
+   - No collateral required
+   - Full credit-based interest rates (5-25% APR)
+   - Minimum credit score: 400
+
+2. **Collateralized Loans**: 35% interest discount
+   - Requires 50% collateral deposit
+   - Reduced interest rate (significant discount)
+   - Collateral returned on full repayment
+   - Collateral seized on default (7-day grace period)
+
+3. **Co-Signed Loans**: 20% interest discount
+   - Requires co-signer approval
+   - Co-signer assumes liability on default
+   - Both parties' credit scores affected
+   - Encourages community trust networks
+
+4. **Pool-Backed Loans**: 25% interest discount
+   - Insurance pool provides default coverage
+   - Pool reserves 120% of loan amount
+   - Pool receives fee on successful repayment
+   - Pool covers losses on default
+   - Defaulters blacklisted from future pool-backed loans
+
+**Benefits**:
+- Increased loan accessibility for lower credit scores
+- Risk mitigation through collateral/co-signers/insurance
+- Lower interest rates for secured options
+- Flexible options based on user circumstances
 
 ---
 
@@ -158,9 +205,10 @@ Study: `03-gas-optimization-report.md`
 | UserRegistry | 850,000 | 680,000 | 20% |
 | CreditScore | 1,200,000 | 1,000,000 | 17% |
 | InsurancePool | 2,800,000 | 2,300,000 | 18% |
-| MicroLoan | 1,850,000 | 1,550,000 | 16% |
+| MicroLoan (Enhanced) | 2,100,000 | 1,750,000 | 17% |
 | PaymentPlan | 2,400,000 | 2,000,000 | 17% |
-| **TOTAL** | **9,100,000** | **7,530,000** | **17%** |
+| BugBounty | 1,200,000 | 1,000,000 | 17% |
+| **TOTAL** | **10,550,000** | **8,730,000** | **17%** |
 
 ### Security Issues Summary
 
@@ -240,6 +288,7 @@ Study: `03-gas-optimization-report.md`
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0.0 | 2025-11-29 | Initial documentation suite |
+| 1.1.0 | 2025-11-29 | Added BugBounty contract, Enhanced MicroLoan with 4 loan types |
 
 ---
 

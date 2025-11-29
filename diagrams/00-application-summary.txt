@@ -57,7 +57,7 @@ De-Medical revolutionizes healthcare insurance by:
 
 ---
 
-## 📜 Smart Contracts (5 Total)
+## 📜 Smart Contracts (6 Total)
 
 ### 1. UserRegistry.sol
 **Purpose**: User management and KYC verification
@@ -76,12 +76,22 @@ De-Medical revolutionizes healthcare insurance by:
 ### 4. MicroLoan.sol
 **Purpose**: Healthcare micro-loans with credit-based rates
 **Parameters**: 0.01-10 ETH, 7-365 days, Min credit 400
-**Interest Rates**: 5% (800+), 8% (700-799), 12% (600-699), 15% (500-599), 20% (400-499), 25% (<400)
+**Base Interest Rates**: 5% (800+), 8% (700-799), 12% (600-699), 15% (500-599), 20% (400-499), 25% (<400)
+**Loan Types**: 
+  1. Unsecured (standard rates)
+  2. Collateralized (35% discount, requires 50% collateral)
+  3. Co-Signed (20% discount, requires co-signer)
+  4. Pool-Backed (25% discount, insurance pool coverage)
 
 ### 5. PaymentPlan.sol
 **Purpose**: BNPL and SNPL payment solutions
 **BNPL**: 2-12 installments, 3-15% interest (credit-based), min score 450
 **SNPL**: 3-24 months, no interest, flexible deposits
+
+### 6. BugBounty.sol
+**Purpose**: Security vulnerability reporting and rewards
+**Severity Levels**: Critical ($50K), High ($10K), Medium ($5K), Low ($1K), Info ($200)
+**Features**: Researcher registration, report management, leaderboard, reward distribution
 
 ---
 
@@ -182,29 +192,33 @@ De-Medical/
 4. Integrated payment ecosystem (BNPL + SNPL + Loans)
 5. AI recommendations (personalized)
 6. IPFS integration (decentralized docs)
+7. Multi-tier loan system (4 types: Unsecured, Collateralized, Co-Signed, Pool-Backed)
+8. Decentralized bug bounty program (on-chain security incentives)
+9. Insurance pool integration with loans (default coverage)
 
 ---
 
 ## 📊 Statistics
 
-- 5 Smart Contracts (~1,500 LOC Solidity)
+- 6 Smart Contracts (~2,000 LOC Solidity)
 - 12 Backend Files (~1,200 LOC JavaScript)
 - 20+ Frontend Components (~2,500 LOC React/Next.js)
-- 11 UML Diagrams
-- 30+ Test Cases
-- 24 Use Cases
+- 14 UML Diagrams (including 3 for enhanced features)
+- 35+ Test Cases
+- 28 Use Cases
 
 ---
 
-## 🎯 24 Use Cases
+## 🎯 28 Use Cases
 
 **User Management**: Register, Login, Update Profile, Upload KYC
 **Pools**: Create, Join, Contribute, View Details
 **Claims**: Submit, Vote, Track Status, Receive Payout
-**Loans**: Apply, Repay, Check Eligibility
+**Loans**: Apply (4 types), Repay, Check Eligibility, Deposit Collateral, Request Co-Signer
 **Credit**: View Score, Track History, Improve
 **Payments**: Create BNPL, Pay Installment, Create SNPL, Make Deposit
 **AI**: Chat, Get Recommendations
+**Bug Bounty**: Register Researcher, Submit Report, Validate Report, Award Bounty
 
 ---
 

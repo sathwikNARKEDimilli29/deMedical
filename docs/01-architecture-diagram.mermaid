@@ -77,8 +77,9 @@ graph TB
             UserReg[UserRegistry.sol<br/>User Management + KYC]
             Credit[CreditScore.sol<br/>Credit Scoring 300-900]
             Pool[InsurancePool.sol<br/>Pooled Insurance + Claims]
-            Loan[MicroLoan.sol<br/>Healthcare Loans]
+            Loan[MicroLoan.sol<br/>Healthcare Loans + 4 Types]
             Payment[PaymentPlan.sol<br/>BNPL + SNPL]
+            BugBounty[BugBounty.sol<br/>Security Bug Bounty Program]
         end
         
         Hardhat --> UserReg
@@ -86,6 +87,7 @@ graph TB
         Hardhat --> Pool
         Hardhat --> Loan
         Hardhat --> Payment
+        Hardhat --> BugBounty
     end
     
     subgraph "External Services"
@@ -115,13 +117,15 @@ graph TB
     IPFSService <-->|HTTP API| IPFS
     
     %% Smart Contract Dependencies
-    Pool -.->|depends on| UserReg
-    Pool -.->|uses| Credit
-    Loan -.->|depends on| UserReg
-    Loan -.->|uses| Credit
-    Payment -.->|depends on| UserReg
-    Payment -.->|uses| Credit
-    Credit -.->|depends on| UserReg
+    Pool -.-|depends on| UserReg
+    Pool -.-|uses| Credit
+    Loan -.-|depends on| UserReg
+    Loan -.-|uses| Credit
+    Loan -.-|uses| Pool
+    Payment -.-|depends on| UserReg
+    Payment -.-|uses| Credit
+    Credit -.-|depends on| UserReg
+    BugBounty -.-|depends on| UserReg
     
     %% Styling
     classDef client fill:#e1f5ff,stroke:#0284c7,stroke-width:2px
@@ -135,5 +139,5 @@ graph TB
     class NextJS,Pages,Components,Providers frontend
     class Express,AuthAPI,PoolAPI,ClaimAPI,LoanAPI,CreditAPI,PaymentAPI,IPFSAPI,AIAPI,AuthService,IPFSService,AIService backend
     class MongoDB,UserColl,PoolColl,ClaimColl,LoanColl,CreditColl database
-    class Hardhat,UserReg,Credit,Pool,Loan,Payment blockchain
+    class Hardhat,UserReg,Credit,Pool,Loan,Payment,BugBounty blockchain
     class IPFS,MetaMask external

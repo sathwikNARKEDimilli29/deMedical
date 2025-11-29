@@ -11,6 +11,7 @@ const creditRoutes = require('./routes/creditRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const ipfsRoutes = require('./routes/ipfsRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const bugBountyRoutes = require('./routes/bugBountyRoutes');
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/de-medical', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nishkama', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -36,10 +37,11 @@ app.use('/api/credit', creditRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/ipfs', ipfsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/bug-bounty', bugBountyRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'De-Medical API is running' });
+  res.json({ status: 'OK', message: 'Nishkama API is running' });
 });
 
 // Error handling middleware

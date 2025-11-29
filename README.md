@@ -6,19 +6,25 @@ A revolutionary blockchain-powered healthcare insurance platform featuring poole
 
 ### Core Features
 - **Pooled Insurance**: Join pools with proportional contributions and claims
-- **Micro-Loans**: Healthcare loans with credit-based interest rates (5-25% APR)
+- **Enhanced Micro-Loans**: Healthcare loans with 4 types of security:
+  - 🔓 **Unsecured Loans**: Traditional credit-based lending (5-25% APR)
+  - 🔒 **Collateralized Loans**: 50% collateral requirement, 35% interest discount
+  - 👥 **Co-Signed Loans**: Co-signer backing, 20% interest discount
+  - 🛡️ **Pool-Backed Loans**: Insurance pool coverage, 25% interest discount
 - **On-Chain Credit Scoring**: Transparent credit scores that improve with payment history
 - **Buy Now Pay Later (BNPL)**: Split medical expenses into 2-12 installments
 - **Save Now Pay Later (SNPL)**: Systematic savings for future medical needs
 - **AI Assistant**: 24/7 chatbot for guidance and recommendations
+- **🐛 Bug Bounty Program**: Rewards for security researchers ($200 - $50,000)
 
 ### Technical Features
-- Smart contracts built with Hardhat & Solidity
+- Smart contracts built with Hardhat & Solidity (6 contracts)
 - Next.js 14 frontend with modern UI/UX
 - MongoDB database for off-chain data
 - IPFS integration for document storage
 - MetaMask wallet integration
 - RESTful API backend with Express.js
+- Comprehensive formal verification specifications
 
 ## 📋 Prerequisites
 
@@ -88,6 +94,7 @@ NEXT_PUBLIC_CONTRACT_ADDRESS_CREDIT=
 NEXT_PUBLIC_CONTRACT_ADDRESS_LOAN=
 NEXT_PUBLIC_CONTRACT_ADDRESS_PAYMENT=
 NEXT_PUBLIC_CONTRACT_ADDRESS_REGISTRY=
+NEXT_PUBLIC_CONTRACT_ADDRESS_BUGBOUNTY=
 ```
 
 **Frontend `.env` file:**
@@ -101,6 +108,7 @@ NEXT_PUBLIC_CONTRACT_ADDRESS_CREDIT=
 NEXT_PUBLIC_CONTRACT_ADDRESS_POOL=
 NEXT_PUBLIC_CONTRACT_ADDRESS_LOAN=
 NEXT_PUBLIC_CONTRACT_ADDRESS_PAYMENT=
+NEXT_PUBLIC_CONTRACT_ADDRESS_BUGBOUNTY=
 ```
 
 ---
@@ -685,6 +693,146 @@ De-Medical/
 - `/loans` - Micro-loans
 - `/credit-score` - Credit score details
 - `/payment-plans` - BNPL/SNPL management
+
+## 🔐 Enhanced Security Features
+
+### Loan Types Comparison
+
+The platform now supports 4 types of loans with varying security levels and interest rates:
+
+| Loan Type | Collateral Required | Co-Signer | Insurance | Interest Discount | Example Rate* |
+|-----------|--------------------|-----------|-----------|--------------------|---------------|
+| **Unsecured** | ❌ No | ❌ No | ❌ No | 0% | 15.0% |
+| **Collateralized** | ✅ 50% of loan amount | ❌ No | ❌ No | 35% | 9.75% |
+| **Co-Signed** | ❌ No | ✅ Required (credit ≥ 600) | ❌ No | 20% | 12.0% |
+| **Pool-Backed** | ❌ No | ❌ No | ✅ 120% coverage | 25% | 11.25% |
+
+*Example rate based on 500 credit score (15% base rate)
+
+### Collateralized Loans
+- Require 50% of loan amount as collateral (in ETH)
+- Collateral is locked in smart contract
+- On successful repayment: Collateral returned + credit score boost
+- On default: Collateral seized and added to loan pool
+- **Interest Discount**: 35% off base rate
+
+**Example**:
+```javascript
+// Borrower wants 1 ETH loan, provides 0.5 ETH collateral
+await microLoan.requestCollateralizedLoan(
+  ethers.parseEther("1"),     // loan amount
+  90,                          // 90 days duration
+  "Surgery costs",             // purpose
+  "QmIPFSHash",               // medical documents
+  { value: ethers.parseEther("0.5") }  // collateral
+);
+```
+
+### Co-Signed Loans
+- Requires a co-signer with credit score ≥ 600
+- Co-signer becomes liable if borrower defaults
+- Both borrower and co-signer credit scores affected
+- Lower interest rate than unsecured loans
+- **Interest Discount**: 20% off base rate
+
+**Default Handling**:
+- Borrower defaults → Co-signer is notified
+- Co-signer must pay remaining balance
+- Borrower: Credit score -50 points
+- Co-signer: Credit score -10 points
+
+### Pool-Backed Loans
+- Backed by insurance pool funds (120% coverage)
+- Pool reserves funds as loan guarantee
+- Lower default risk for lenders
+- **Interest Discount**: 25% off base rate
+- Available only to non-blacklisted users
+
+**Default Handling**:
+- Insurance pool covers the loss
+- Borrower is blacklisted from future pool-backed loans
+- Pool members share the loss proportionally
+- Pool receives interest premium (20% of loan amount)
+
+### Bug Bounty Program
+
+Security researchers can earn rewards by finding vulnerabilities:
+
+| Severity | Impact Examples | Reward |
+|----------|----------------|--------|
+| **CRITICAL** | Fund theft, complete system compromise | 25 ETH (~$50,000) |
+| **HIGH** | Unauthorized access, partial DOS | 5 ETH (~$10,000) |
+| **MEDIUM** | Logic errors, data corruption | 2.5 ETH (~$5,000) |
+| **LOW** | Edge cases, minor vulnerabilities | 0.5 ETH (~$1,000) |
+| **INFORMATIONAL** | Code quality, gas optimizations | 0.1 ETH (~$200) |
+
+**Process**:
+1. Register as security researcher
+2. Submit bug report with IPFS-stored POC
+3. Admin triages and confirms severity
+4. Bug is verified and reward approved
+5. Fix is deployed
+6. Researcher is paid
+7. Responsible disclosure (90 days post-fix)
+
+## 🌐 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login/wallet` - Login with wallet
+- `GET /api/auth/profile/:address` - Get user profile
+
+### Pools
+- `GET /api/pools` - Get all pools
+- `GET /api/pools/:id` - Get pool details
+- `POST /api/pools` - Create new pool
+
+### Claims
+- `GET /api/claims` - Get claims
+- `POST /api/claims` - Submit claim
+
+### Loans
+- `GET /api/loans` - Get loans
+- `POST /api/loans` - Request loan
+- `POST /api/loans/collateralized` - Request collateralized loan
+- `POST /api/loans/cosigned` - Request co-signed loan
+- `POST /api/loans/pool-backed` - Request pool-backed loan
+- `POST /api/loans/:id/cosigner-payment` - Co-signer makes payment
+
+### Credit
+- `GET /api/credit/:address` - Get credit score
+
+### Bug Bounty
+- `POST /api/bug-bounty/register` - Register as researcher
+- `POST /api/bug-bounty/report` - Submit bug report
+- `GET /api/bug-bounty/reports` - Get all reports
+- `GET /api/bug-bounty/reports/:id` - Get specific report
+- `GET /api/bug-bounty/researcher/:address` - Get researcher profile
+- `GET /api/bug-bounty/leaderboard` - Top researchers
+- **Admin Routes**:
+  - `PUT /api/bug-bounty/reports/:id/triage` - Triage report
+  - `PUT /api/bug-bounty/reports/:id/verify` - Verify bug
+  - `POST /api/bug-bounty/reports/:id/pay` - Pay reward
+  - `POST /api/bug-bounty/reports/:id/disclose` - Public disclosure
+
+### AI Assistant
+- `POST /api/ai/chat` - Chat with AI
+- `POST /api/ai/recommend` - Get recommendations
+
+## 🎨 Frontend Pages
+
+- `/` - Landing page
+- `/auth/register` - User registration
+- `/auth/login` - User login
+- `/dashboard` - User dashboard
+- `/pools` - Browse insurance pools
+- `/claims` - Manage claims
+- `/loans` - Micro-loans (with loan type selector)
+- `/credit-score` - Credit score details
+- `/payment-plans` - BNPL/SNPL management
+- `/bug-bounty` - Bug bounty dashboard (planned)
+- `/bug-bounty/submit` - Submit bug report (planned)
+- `/bug-bounty/admin` - Admin panel (planned)
 
 ## 🧪 Testing
 

@@ -27,10 +27,10 @@ async function main() {
   const insurancePoolAddress = await insurancePool.getAddress();
   console.log("InsurancePool deployed to:", insurancePoolAddress);
   
-  // Deploy MicroLoan
+  // Deploy MicroLoan (NOW WITH INSURANCE POOL)
   console.log("\n4. Deploying MicroLoan...");
   const MicroLoan = await hre.ethers.getContractFactory("MicroLoan");
-  const microLoan = await MicroLoan.deploy(userRegistryAddress, creditScoreAddress);
+  const microLoan = await MicroLoan.deploy(userRegistryAddress, creditScoreAddress, insurancePoolAddress);
   await microLoan.waitForDeployment();
   const microLoanAddress = await microLoan.getAddress();
   console.log("MicroLoan deployed to:", microLoanAddress);
@@ -43,19 +43,33 @@ async function main() {
   const paymentPlanAddress = await paymentPlan.getAddress();
   console.log("PaymentPlan deployed to:", paymentPlanAddress);
   
+  // Deploy BugBounty
+  console.log("\n6. Deploying BugBounty...");
+  const BugBounty = await hre.ethers.getContractFactory("BugBounty");
+  const bugBounty = await BugBounty.deploy();
+  await bugBounty.waitForDeployment();
+  const bugBountyAddress = await bugBounty.getAddress();
+  console.log("BugBounty deployed to:", bugBountyAddress);
+  
   // Authorize contracts in CreditScore
-  console.log("\n6. Authorizing contracts in CreditScore...");
+  console.log("\n7. Authorizing contracts in CreditScore...");
   await creditScore.authorizeContract(microLoanAddress);
   await creditScore.authorizeContract(paymentPlanAddress);
   await creditScore.authorizeContract(insurancePoolAddress);
   console.log("Contracts authorized");
   
   // Fund pools
-  console.log("\n7. Funding pools (optional)...");
+  console.log("\n8. Funding pools...");
   const fundAmount = hre.ethers.parseEther("100");
   await microLoan.fundPool({ value: fundAmount });
   await paymentPlan.fundPool({ value: fundAmount });
-  console.log("Pools funded with 100 ETH each");
+  console.log("Loan and Payment pools funded with 100 ETH each");
+  
+  // Fund bug bounty pool
+  console.log("\n9. Funding Bug Bounty pool...");
+  const bountyFund = hre.ethers.parseEther("50");
+  await bugBounty.fundBountyPool({ value: bountyFund });
+  console.log("Bug Bounty pool funded with 50 ETH");
   
   console.log("\n✅ Deployment Complete!");
   console.log("\n📋 Contract Addresses:");
@@ -65,6 +79,7 @@ async function main() {
   console.log("InsurancePool: ", insurancePoolAddress);
   console.log("MicroLoan:     ", microLoanAddress);
   console.log("PaymentPlan:   ", paymentPlanAddress);
+  console.log("BugBounty:     ", bugBountyAddress);
   
   console.log("\n📝 Add these to your .env file:");
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_REGISTRY=${userRegistryAddress}`);
@@ -72,6 +87,7 @@ async function main() {
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_POOL=${insurancePoolAddress}`);
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_LOAN=${microLoanAddress}`);
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_PAYMENT=${paymentPlanAddress}`);
+  console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_BUGBOUNTY=${bugBountyAddress}`);
 }
 
 main()

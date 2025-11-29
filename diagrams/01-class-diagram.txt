@@ -41,14 +41,21 @@ classDiagram
     class MicroLoan {
         +mapping loans
         +mapping borrowerLoans
+        +mapping collaterals
+        +mapping coSignerApprovals
         +UserRegistry userRegistry
         +CreditScore creditScore
+        +InsurancePool insurancePool
         +uint256 loanCount
         +uint256 poolBalance
         +requestLoan(...) uint256
+        +requestLoanWithCollateral(...) uint256
+        +requestLoanWithCoSigner(...) uint256
+        +requestPoolBackedLoan(...) uint256
         +repayLoan(uint256 loanId) payable
         +calculateInterestRate(uint256 score) uint256
         +calculateTotalOwed(uint256 loanId) uint256
+        +approveCosigning(address borrower)
     }
     
     class PaymentPlan {
@@ -62,6 +69,23 @@ classDiagram
         +payBNPLInstallment(uint256 planId) payable
         +createSNPL(...) uint256
         +depositToSNPL(uint256 planId) payable
+    }
+    
+    class BugBounty {
+        +mapping researchers
+        +mapping reports
+        +mapping leaderboard
+        +UserRegistry userRegistry
+        +uint256 researcherCount
+        +uint256 reportCount
+        +address owner
+        +registerResearcher(string name)
+        +submitReport(...) uint256
+        +validateReport(uint256 reportId)
+        +approveReport(uint256 reportId)
+        +rejectReport(uint256 reportId)
+        +awardBounty(uint256 reportId) payable
+        +getLeaderboard() Researcher[]
     }
     
     class Pool {
@@ -93,15 +117,42 @@ classDiagram
         +uint256 duration
         +uint256 amountRepaid
         +LoanStatus status
+        +LoanType loanType
+        +uint256 collateralAmount
+        +address coSigner
+        +uint256 poolId
+    }
+    
+    class Researcher {
+        +address researcherAddress
+        +string name
+        +uint256 totalReports
+        +uint256 approvedReports
+        +uint256 totalRewards
+        +uint256 reputation
+    }
+    
+    class BugReport {
+        +uint256 id
+        +address researcher
+        +Severity severity
+        +string title
+        +string description
+        +ReportStatus status
+        +uint256 reward
     }
 
     UserRegistry <-- CreditScore : depends on
     UserRegistry <-- InsurancePool : depends on
     UserRegistry <-- MicroLoan : depends on
     UserRegistry <-- PaymentPlan : depends on
+    UserRegistry <-- BugBounty : depends on
     CreditScore <-- InsurancePool : uses
     CreditScore <-- MicroLoan : uses
     CreditScore <-- PaymentPlan : uses
+    InsurancePool <-- MicroLoan : uses
     InsurancePool "1" *-- "many" Pool : contains
     InsurancePool "1" *-- "many" Claim : manages
     MicroLoan "1" *-- "many" Loan : manages
+    BugBounty "1" *-- "many" Researcher : tracks
+    BugBounty "1" *-- "many" BugReport : manages

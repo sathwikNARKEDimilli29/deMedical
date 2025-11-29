@@ -25,6 +25,9 @@ graph TB
             UC13[Apply for Loan]
             UC14[Repay Loan]
             UC15[Check Eligibility]
+            UC25[Apply with Collateral]
+            UC26[Request Co-Signer]
+            UC27[Apply Pool-Backed Loan]
         end
         
         subgraph "Credit Score"
@@ -43,6 +46,13 @@ graph TB
         subgraph "AI Assistant"
             UC23[Chat with AI]
             UC24[Get Recommendations]
+        end
+        
+        subgraph "Bug Bounty"
+            UC28[Register as Researcher]
+            UC29[Submit Bug Report]
+            UC30[Validate Report]
+            UC31[Award Bounty]
         end
     end
     
@@ -70,9 +80,17 @@ graph TB
     User --> UC22
     User --> UC23
     User --> UC24
+    User --> UC25
+    User --> UC26
+    User --> UC27
     
     Admin((Admin/KYC<br/>Verifier)) --> UC4
     Admin --> UC10
+    Admin --> UC30
+    Admin --> UC31
+    
+    Researcher((Security<br/>Researcher)) --> UC28
+    Researcher --> UC29
     
     SmartContract((Smart<br/>Contracts)) -.-> UC1
     SmartContract -.-> UC6
@@ -82,6 +100,12 @@ graph TB
     SmartContract -.-> UC14
     SmartContract -.-> UC19
     SmartContract -.-> UC21
+    SmartContract -.-> UC25
+    SmartContract -.-> UC26
+    SmartContract -.-> UC27
+    SmartContract -.-> UC29
+    SmartContract -.-> UC30
+    SmartContract -.-> UC31
     
     Backend((Backend<br/>API)) -.-> UC2
     Backend -.-> UC3
@@ -91,3 +115,4 @@ graph TB
     
     IPFS((IPFS<br/>Storage)) -.-> UC4
     IPFS -.-> UC9
+    IPFS -.-> UC29
