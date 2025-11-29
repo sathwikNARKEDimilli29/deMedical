@@ -1,0 +1,105 @@
+sequenceDiagram
+    actor Borrower
+    participant Frontend
+    participant LoanContract as MicroLoan Contract
+    participant CreditContract as CreditScore Contract
+    participant PoolContract as InsurancePool Contract
+    participant CoSigner
+    
+    Note over Borrower,CoSigner: Enhanced Loan Request with Collateral/Co-Signer
+    
+    Borrower->>Frontend: Request loan (1 ETH, 90 days)
+    Frontend->>CreditContract: Get credit score
+    CreditContract-->>Frontend: Score: 550 (Fair tier)
+    
+    Frontend->>Borrower: Options presented:<br/>1. Unsecured (18% APR)<br/>2. With Collateral (12% APR)<br/>3. With Co-Signer (15% APR)<br/>4. Pool Backed (14% APR)
+    
+    alt Option 1: Unsecured Loan
+        Borrower->>LoanContract: requestLoan(1 ETH, 90 days)
+        LoanContract->>CreditContract: Verify score >= 400
+        CreditContract-->>LoanContract: Verified (550)
+        LoanContract->>LoanContract: Calculate rate: 18%
+        LoanContract->>Borrower: Transfer 1 ETH
+        Note right of Borrower: High interest<br/>No protection
+        
+    else Option 2: Collateralized Loan
+        Borrower->>Frontend: Choose collateral option
+        Frontend->>Borrower: Deposit 0.5 ETH collateral
+        
+        Borrower->>LoanContract: requestLoanWithCollateral()<br/>{value: 0.5 ETH}
+        LoanContract->>LoanContract: Lock collateral
+        LoanContract->>LoanContract: Reduced rate: 12%
+        LoanContract->>Borrower: Transfer 1 ETH
+        
+        Note over Borrower,LoanContract: Collateral Protection Active
+        
+        alt Full Repayment
+            Borrower->>LoanContract: repayLoan() + interest
+            LoanContract->>LoanContract: Mark as REPAID
+            LoanContract->>Borrower: Return 0.5 ETH collateral
+            LoanContract->>CreditContract: recordLoan(true)
+            
+        else Default
+            Note over LoanContract: Grace period: 7 days
+            LoanContract->>LoanContract: Seize collateral
+            LoanContract->>PoolContract: Transfer collateral to pool
+            LoanContract->>CreditContract: recordLoan(false) - score penalty
+        end
+        
+    else Option 3: Co-Signer Backed Loan
+        Borrower->>CoSigner: Request co-signature
+        CoSigner->>Frontend: Review borrower profile
+        Frontend-->>CoSigner: Credit: 550, History: 12 months
+        
+        CoSigner->>LoanContract: approveCosigning(borrowerId)
+        
+        Borrower->>LoanContract: requestLoanWithCoSigner(coSignerAddress)
+        LoanContract->>LoanContract: Verify co-signer approval
+        LoanContract->>LoanContract: Reduced rate: 15%
+        LoanContract->>Borrower: Transfer 1 ETH
+        
+        Note over Borrower,CoSigner: Co-Signer Liability Active
+        
+        alt Borrower Repays
+            Borrower->>LoanContract: Full repayment
+            LoanContract->>CreditContract: Update both scores (+5)
+            LoanContract->>CoSigner: Notify - Obligation cleared
+            
+        else Borrower Defaults
+            LoanContract->>CoSigner: Request co-signer payment
+            CoSigner->>LoanContract: Pay remaining balance
+            LoanContract->>CreditContract: Borrower score -50
+            LoanContract->>CreditContract: Co-signer score -10
+        end
+        
+    else Option 4: Insurance Pool Backed
+        Borrower->>LoanContract: requestPoolBackedLoan(poolId)
+        
+        LoanContract->>PoolContract: Check pool solvency
+        PoolContract-->>LoanContract: Available: 5 ETH
+        
+        LoanContract->>PoolContract: Reserve 1.2 ETH for default coverage
+        PoolContract->>PoolContract: Lock funds for loan guarantee
+        
+        LoanContract->>LoanContract: Calculate rate: 14%
+        LoanContract->>Borrower: Transfer 1 ETH
+        
+        Note over LoanContract,PoolContract: Pool Guarantee Active
+        
+        alt Successful Repayment
+            Borrower->>LoanContract: Full repayment
+            LoanContract->>PoolContract: Release locked funds
+            PoolContract->>PoolContract: Add 0.2 ETH fee to pool
+            LoanContract->>CreditContract: recordLoan(true)
+            
+        else Default After Grace Period
+            LoanContract->>PoolContract: Claim default insurance
+            PoolContract->>PoolContract: Reduce locked funds by loss
+            PoolContract->>LoanContract: Transfer recovery amount
+            
+            LoanContract->>CreditContract: recordLoan(false)
+            Note right of Borrower: Blacklisted from<br/>pool-backed loans
+        end
+    end
+    
+    Note over Borrower,CoSigner: All options improve loan accessibility

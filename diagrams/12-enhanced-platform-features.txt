@@ -1,0 +1,106 @@
+graph TB
+    subgraph "User Interface Layer"
+        Users[Users/Borrowers]
+        SecurityResearchers[Security Researchers]
+        Admins[Platform Admins]
+    end
+    
+    subgraph "Nishkama Platform"
+        subgraph "Core Features"
+            Pools[Insurance Pools]
+            Loans[Micro-Loans]
+            Claims[Claim Management]
+            Credit[Credit Scoring]
+            Payments[Payment Plans BNPL/SNPL]
+        end
+        
+        subgraph "Security Features"
+            BugBounty[Bug Bounty Program]
+            Collateral[Collateral System]
+            CoSigner[Co-Signer Mechanism]
+            InsuranceBackup[Loan Default Insurance]
+        end
+        
+        subgraph "Verification & Audit"
+            FormVerif[Formal Verification]
+            SecurityAudit[Security Audits]
+            GasOpt[Gas Optimization]
+        end
+    end
+    
+    subgraph "Smart Contracts"
+        UserReg[UserRegistry.sol]
+        CreditSC[CreditScore.sol]
+        PoolSC[InsurancePool.sol]
+        LoanSC[MicroLoan.sol]
+        PaymentSC[PaymentPlan.sol]
+    end
+    
+    %% User Interactions
+    Users --> Pools
+    Users --> Loans
+    Users --> Claims
+    Users --> Payments
+    
+    %% Security Researcher Interactions
+    SecurityResearchers --> BugBounty
+    BugBounty -.reports.-> Admins
+    
+    %% Admin Management
+    Admins --> BugBounty
+    Admins --> SecurityAudit
+    Admins --> FormVerif
+    
+    %% Core Feature Connections
+    Loans --> Collateral
+    Loans --> CoSigner
+    Loans --> InsuranceBackup
+    Pools --> InsuranceBackup
+    
+    %% Credit Integration
+    Credit --> Loans
+    Credit --> Payments
+    Loans -.updates.-> Credit
+    Payments -.updates.-> Credit
+    
+    %% Contract Connections
+    Pools --> PoolSC
+    Loans --> LoanSC
+    Claims --> PoolSC
+    Credit --> CreditSC
+    Payments --> PaymentSC
+    
+    %% Cross-Contract Dependencies
+    LoanSC -.uses.-> CreditSC
+    LoanSC -.uses.-> UserReg
+    LoanSC -.uses.-> PoolSC
+    PoolSC -.uses.-> CreditSC
+    PoolSC -.uses.-> UserReg
+    PaymentSC -.uses.-> CreditSC
+    PaymentSC -.uses.-> UserReg
+    
+    %% Security Integration
+    BugBounty -.tests.-> UserReg
+    BugBounty -.tests.-> CreditSC
+    BugBounty -.tests.-> PoolSC
+    BugBounty -.tests.-> LoanSC
+    BugBounty -.tests.-> PaymentSC
+    
+    FormVerif -.verifies.-> UserReg
+    FormVerif -.verifies.-> CreditSC
+    FormVerif -.verifies.-> PoolSC
+    FormVerif -.verifies.-> LoanSC
+    FormVerif -.verifies.-> PaymentSC
+    
+    %% Styling
+    classDef users fill:#e1f5ff,stroke:#0284c7,stroke-width:2px
+    classDef core fill:#c8e6c9,stroke:#4caf50,stroke-width:2px
+    classDef security fill:#ffecb3,stroke:#ffa000,stroke-width:3px
+    classDef contracts fill:#f0b90b,stroke:#f57c00,stroke-width:2px
+    classDef verification fill:#d1c4e9,stroke:#7b1fa2,stroke-width:2px
+    
+    class Users,SecurityResearchers,Admins users
+    class Pools,Loans,Claims,Credit,Payments core
+    class BugBounty,Collateral,CoSigner,InsuranceBackup security
+    class UserReg,CreditSC,PoolSC,LoanSC,PaymentSC contracts
+    class FormVerif,SecurityAudit,GasOpt verification

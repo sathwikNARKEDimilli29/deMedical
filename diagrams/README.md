@@ -2,6 +2,13 @@
 
 This directory contains all UML diagrams for the De-Medical blockchain insurance platform in Mermaid format.
 
+## 🔐 Enhanced Security Features
+
+This platform now includes:
+- **Bug Bounty Program** - Incentivizes security researchers to find vulnerabilities
+- **Collateral Mechanism** - Loans can require collateral or co-signers for added security
+- **Insurance Pool Integration** - Default loan coverage through insurance pool backing
+
 ## 📁 Files
 
 1. **01-class-diagram.txt** - Smart Contract Class Diagram
@@ -15,6 +22,9 @@ This directory contains all UML diagrams for the De-Medical blockchain insurance
 9. **09-communication-claim-voting.txt** - Claim Voting Communication Diagram
 10. **10-component-interaction.txt** - Component Interaction Diagram
 11. **11-deployment-architecture.txt** - Deployment Architecture Diagram
+12. **12-enhanced-platform-features.txt** - Platform Features with Security Enhancements
+13. **13-bug-bounty-sequence.txt** - Bug Bounty Program Workflow
+14. **14-enhanced-loan-options.txt** - Loan Application with Collateral/Co-Signer/Insurance Options
 
 ## 🎨 How to Use
 

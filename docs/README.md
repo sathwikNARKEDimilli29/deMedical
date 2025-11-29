@@ -49,6 +49,33 @@ This directory contains comprehensive technical documentation, analysis reports,
 
 ---
 
+### 4. Formal Verification Specification
+**File**: `04-formal-verification.md`  
+**Format**: Markdown with CVL examples  
+**Description**: Mathematical proofs of correctness for all smart contracts including:
+- Formal invariants and properties for each contract
+- CVL (Certora Verification Language) specifications
+- State transition property definitions
+- Cross-contract invariant verification
+- Verification methodology and tooling guide
+- Cost-benefit analysis ($50K-100K investment)
+
+**Key Sections**:
+- Contract-specific invariants (17 total)
+- State transition properties (12 total)
+- Global system properties
+- Verification checklist and timeline
+- Tool configuration examples (Certora, K Framework)
+
+**Verification Priorities**:
+1. Access control properties (Critical)
+2. Value transfer correctness (Critical)
+3. State consistency (High)
+4. Business logic accuracy (High)
+5. Edge case handling (Medium)
+
+---
+
 ### 3. Gas Optimization Report
 **File**: `03-gas-optimization-report.md`  
 **Format**: Markdown  
