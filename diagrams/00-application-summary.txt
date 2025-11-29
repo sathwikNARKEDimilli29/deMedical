@@ -90,7 +90,7 @@ De-Medical revolutionizes healthcare insurance by:
 
 ### 6. BugBounty.sol
 **Purpose**: Security vulnerability reporting and rewards
-**Severity Levels**: Critical ($50K), High ($10K), Medium ($5K), Low ($1K), Info ($200)
+**Severity Levels**: Critical, High, Medium, Low, Info (Dynamic Rewards)
 **Features**: Researcher registration, report management, leaderboard, reward distribution
 
 ---

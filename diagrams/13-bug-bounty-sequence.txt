@@ -29,7 +29,7 @@ sequenceDiagram
         Researcher->>BugBounty: Provide POC (Proof of Concept)
         
         Admins->>BugBounty: Confirm vulnerability
-        BugBounty->>Researcher: Bug approved - $50,000 reward
+        BugBounty->>Researcher: Bug approved - Dynamic Reward
         
         Admins->>Contracts: Deploy fix
         Admins->>BugBounty: Mark as resolved
@@ -44,7 +44,7 @@ sequenceDiagram
         Admins->>BugBounty: Triage within 24h
         
         Admins->>BugBounty: Confirm bug
-        BugBounty->>Researcher: Reward: $10,000
+        BugBounty->>Researcher: Reward: Dynamic Amount
         
         Admins->>Contracts: Deploy fix in next release
         BugBounty->>Researcher: Transfer reward
@@ -54,7 +54,7 @@ sequenceDiagram
         BugBounty->>Admins: Standard notification
         
         Admins->>BugBounty: Review (72h)
-        BugBounty->>Researcher: Reward: $1,000-$5,000
+        BugBounty->>Researcher: Reward: Dynamic Amount
     end
     
     Note over Researcher,Contracts: Post-Fix Verification

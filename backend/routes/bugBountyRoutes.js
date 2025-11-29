@@ -1,6 +1,81 @@
 const express = require('express');
 const router = express.Router();
 const { BugReport, Researcher } = require('../models/BugBounty');
+const RewardConfig = require('../models/RewardConfig');
+
+// Default rewards configuration
+const DEFAULT_REWARDS = [
+  { severity: 'CRITICAL', amount: '25 ETH', amountUSD: '~$50,000', color: 'red', icon: '🔴' },
+  { severity: 'HIGH', amount: '5 ETH', amountUSD: '~$10,000', color: 'orange', icon: '🟠' },
+  { severity: 'MEDIUM', amount: '2.5 ETH', amountUSD: '~$5,000', color: 'yellow', icon: '🟡' },
+  { severity: 'LOW', amount: '0.5 ETH', amountUSD: '~$1,000', color: 'blue', icon: '🔵' },
+  { severity: 'INFORMATIONAL', amount: '0.1 ETH', amountUSD: '~$200', color: 'gray', icon: '⚪' }
+];
+
+// Initialize default rewards if not exists
+const initializeRewards = async () => {
+  try {
+    const count = await RewardConfig.countDocuments();
+    if (count === 0) {
+      await RewardConfig.insertMany(DEFAULT_REWARDS);
+      console.log('Default bug bounty rewards initialized');
+    }
+  } catch (error) {
+    console.error('Error initializing rewards:', error);
+  }
+};
+
+// Run initialization
+initializeRewards();
+
+// Get reward configuration
+router.get('/config', async (req, res) => {
+  try {
+    const config = await RewardConfig.find({});
+    // Sort by severity importance for display order
+    const severityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3, 'INFORMATIONAL': 4 };
+    const sortedConfig = config.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+    
+    res.json({ config: sortedConfig });
+  } catch (error) {
+    console.error('Error fetching reward config:', error);
+    res.status(500).json({ error: 'Failed to fetch reward configuration' });
+  }
+});
+
+// Update reward configuration (admin only)
+router.put('/config', async (req, res) => {
+  try {
+    const { updates } = req.body; // Array of { severity, amount, amountUSD }
+    
+    if (!updates || !Array.isArray(updates)) {
+      return res.status(400).json({ error: 'Invalid updates format' });
+    }
+
+    const results = [];
+    for (const update of updates) {
+      const { severity, amount, amountUSD } = update;
+      if (severity) {
+        const result = await RewardConfig.findOneAndUpdate(
+          { severity },
+          { 
+            $set: { 
+              ...(amount && { amount }),
+              ...(amountUSD && { amountUSD })
+            } 
+          },
+          { new: true }
+        );
+        results.push(result);
+      }
+    }
+    
+    res.json({ message: 'Rewards updated successfully', config: results });
+  } catch (error) {
+    console.error('Error updating reward config:', error);
+    res.status(500).json({ error: 'Failed to update reward configuration' });
+  }
+});
 
 // Register as security researcher
 router.post('/register', async (req, res) => {

@@ -54,12 +54,40 @@ export default function BugBounty() {
     }
   };
 
-  const severityConfig = {
-    CRITICAL: { color: 'red', reward: '25 ETH (~$50,000)', icon: '🔴' },
-    HIGH: { color: 'orange', reward: '5 ETH (~$10,000)', icon: '🟠' },
-    MEDIUM: { color: 'yellow', reward: '2.5 ETH (~$5,000)', icon: '🟡' },
-    LOW: { color: 'blue', reward: '0.5 ETH (~$1,000)', icon: '🔵' },
-    INFORMATIONAL: { color: 'gray', reward: '0.1 ETH (~$200)', icon: '⚪' }
+  const [severityConfig, setSeverityConfig] = useState({});
+
+  useEffect(() => {
+    if (account) {
+      loadData();
+    }
+    loadRewards();
+  }, [account, loadData]);
+
+  const loadRewards = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/bug-bounty/config`);
+      if (res.data?.config) {
+        const configMap = {};
+        res.data.config.forEach(item => {
+          configMap[item.severity] = {
+            color: item.color,
+            reward: `${item.amount} (${item.amountUSD})`,
+            icon: item.icon
+          };
+        });
+        setSeverityConfig(configMap);
+      }
+    } catch (error) {
+      console.error('Failed to load reward config:', error);
+      // Fallback to defaults if API fails
+      setSeverityConfig({
+        CRITICAL: { color: 'red', reward: '25 ETH (~$50,000)', icon: '🔴' },
+        HIGH: { color: 'orange', reward: '5 ETH (~$10,000)', icon: '🟠' },
+        MEDIUM: { color: 'yellow', reward: '2.5 ETH (~$5,000)', icon: '🟡' },
+        LOW: { color: 'blue', reward: '0.5 ETH (~$1,000)', icon: '🔵' },
+        INFORMATIONAL: { color: 'gray', reward: '0.1 ETH (~$200)', icon: '⚪' }
+      });
+    }
   };
 
   const statusConfig = {

@@ -758,13 +758,15 @@ await microLoan.requestCollateralizedLoan(
 
 Security researchers can earn rewards by finding vulnerabilities:
 
-| Severity | Impact Examples | Reward |
+| Severity | Impact Examples | Reward (Dynamic) |
 |----------|----------------|--------|
-| **CRITICAL** | Fund theft, complete system compromise | 25 ETH (~$50,000) |
-| **HIGH** | Unauthorized access, partial DOS | 5 ETH (~$10,000) |
-| **MEDIUM** | Logic errors, data corruption | 2.5 ETH (~$5,000) |
-| **LOW** | Edge cases, minor vulnerabilities | 0.5 ETH (~$1,000) |
-| **INFORMATIONAL** | Code quality, gas optimizations | 0.1 ETH (~$200) |
+| **CRITICAL** | Fund theft, complete system compromise | ~25 ETH (~$50,000) |
+| **HIGH** | Unauthorized access, partial DOS | ~5 ETH (~$10,000) |
+| **MEDIUM** | Logic errors, data corruption | ~2.5 ETH (~$5,000) |
+| **LOW** | Edge cases, minor vulnerabilities | ~0.5 ETH (~$1,000) |
+| **INFORMATIONAL** | Code quality, gas optimizations | ~0.1 ETH (~$200) |
+
+*Note: Reward amounts are dynamic and configured by the admin. The values above are default estimates.*
 
 **Process**:
 1. Register as security researcher

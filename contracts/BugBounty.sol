@@ -54,13 +54,14 @@ contract BugBounty is Ownable, ReentrancyGuard {
     event RewardUpdated(Severity severity, uint256 newReward);
     event PublicDisclosure(uint256 indexed reportId);
     
-    constructor() Ownable(msg.sender) {
-        // Set default rewards (can be updated by owner)
-        rewards[Severity.INFORMATIONAL] = 0.1 ether;    // ~$200
-        rewards[Severity.LOW] = 0.5 ether;              // ~$1,000
-        rewards[Severity.MEDIUM] = 2.5 ether;           // ~$5,000
-        rewards[Severity.HIGH] = 5 ether;               // ~$10,000
-        rewards[Severity.CRITICAL] = 25 ether;          // ~$50,000
+    constructor(uint256[] memory _initialRewards) Ownable(msg.sender) {
+        require(_initialRewards.length == 5, "Invalid rewards length");
+        // Set initial rewards
+        rewards[Severity.INFORMATIONAL] = _initialRewards[0];
+        rewards[Severity.LOW] = _initialRewards[1];
+        rewards[Severity.MEDIUM] = _initialRewards[2];
+        rewards[Severity.HIGH] = _initialRewards[3];
+        rewards[Severity.CRITICAL] = _initialRewards[4];
     }
     
     // Fund the bounty pool

@@ -108,7 +108,7 @@ This directory contains comprehensive technical documentation, analysis reports,
 **Purpose**: Decentralized bug bounty program to incentivize security research
 
 **Key Features**:
-- **5 Severity Levels**: Critical ($50,000), High ($10,000), Medium ($5,000), Low ($1,000), Informational ($200)
+- **5 Severity Levels**: Critical, High, Medium, Low, Informational (Rewards are dynamic and configurable)
 - **Researcher Management**: Registration, profile tracking, leaderboard system
 - **Report Lifecycle**: Submission, validation, approval, reward distribution
 - **Security Focus**: Encourages continuous security assessment by white-hat researchers

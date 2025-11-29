@@ -46,7 +46,14 @@ async function main() {
   // Deploy BugBounty
   console.log("\n6. Deploying BugBounty...");
   const BugBounty = await hre.ethers.getContractFactory("BugBounty");
-  const bugBounty = await BugBounty.deploy();
+  const initialRewards = [
+    hre.ethers.parseEther("0.1"), // INFORMATIONAL
+    hre.ethers.parseEther("0.5"), // LOW
+    hre.ethers.parseEther("2.5"), // MEDIUM
+    hre.ethers.parseEther("5"),   // HIGH
+    hre.ethers.parseEther("25")   // CRITICAL
+  ];
+  const bugBounty = await BugBounty.deploy(initialRewards);
   await bugBounty.waitForDeployment();
   const bugBountyAddress = await bugBounty.getAddress();
   console.log("BugBounty deployed to:", bugBountyAddress);
