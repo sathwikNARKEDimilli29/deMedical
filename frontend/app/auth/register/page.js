@@ -56,7 +56,7 @@ export default function Register() {
         className="card max-w-md w-full"
       >
         <h1 className="text-3xl font-bold gradient-text mb-2">Create Account</h1>
-        <p className="text-dark-600 mb-8">Join De-Medical and get started</p>
+        <p className="text-dark-600 mb-8">Join Nishkama and get started</p>
 
         {!account ? (
           <div className="text-center">

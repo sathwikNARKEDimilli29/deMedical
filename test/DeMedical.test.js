@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("De-Medical Insurance Platform", function () {
+describe("Nishkama Insurance Platform", function () {
   let userRegistry, creditScore, insurancePool, microLoan, paymentPlan;
   let owner, user1, user2, user3, kycVerifier;
   

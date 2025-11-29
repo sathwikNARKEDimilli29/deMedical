@@ -10,7 +10,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hi! I'm your De-Medical AI assistant. I can help you with insurance pools, claims, loans, and payment plans. How can I help you today?" }
+    { role: 'assistant', content: "Hi! I'm your Nishkama AI assistant. I can help you with insurance pools, claims, loans, and payment plans. How can I help you today?" }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);

@@ -8,7 +8,7 @@ import AIAssistant from '@/components/AIAssistant';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'De-Medical - Blockchain Insurance Platform',
+  title: 'Nishkama - Blockchain Insurance Platform',
   description: 'Revolutionary blockchain-powered insurance with pooled contributions, micro-loans, and smart payment plans',
 };
 

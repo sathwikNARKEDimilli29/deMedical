@@ -36,10 +36,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xl">D</span>
+              <span className="text-white font-bold text-xl">N</span>
             </div>
             <span className="text-xl font-bold gradient-text hidden md:block">
-              De-Medical
+              Nishkama
             </span>
           </Link>
 
