@@ -17,26 +17,28 @@ export default function Loans() {
   const [showLoanForm, setShowLoanForm] = useState(false);
 
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [loansRes, creditRes] = await Promise.all([
+          axios.get(`${API_URL}/loans?borrower=${account}`),
+          axios.get(`${API_URL}/credit/${account}`)
+        ]);
+        
+        setLoans(loansRes.data);
+        setCreditScore(creditRes.data.currentScore || 500);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (account) {
       loadData();
     }
   }, [account]);
 
-  const loadData = async () => {
-    try {
-      const [loansRes, creditRes] = await Promise.all([
-        axios.get(`${API_URL}/loans?borrower=${account}`),
-        axios.get(`${API_URL}/credit/${account}`)
-      ]);
-      
-      setLoans(loansRes.data);
-      setCreditScore(creditRes.data.currentScore || 500);
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const getBaseInterestRate = (score) => {
     if (score >= 800) return 5;

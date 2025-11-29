@@ -13,23 +13,25 @@ export default function Login() {
   const { login, user } = useAuth();
 
   useEffect(() => {
+    const handleLogin = async () => {
+      const success = await login(account);
+      if (!success) {
+        router.push('/auth/register');
+      }
+    };
+
     if (account) {
       handleLogin();
     }
-  }, [account]);
+  }, [account, login, router]);
 
   useEffect(() => {
     if (user) {
       router.push('/dashboard');
     }
-  }, [user]);
+  }, [user, router]);
 
-  const handleLogin = async () => {
-    const success = await login(account);
-    if (!success) {
-      router.push('/auth/register');
-    }
-  };
+
 
   const handleConnect = async () => {
     await connectWallet();
@@ -55,7 +57,7 @@ export default function Login() {
           </button>
 
           <p className="text-sm text-dark-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button
               onClick={() => router.push('/auth/register')}
               className="text-primary-500 hover:underline"

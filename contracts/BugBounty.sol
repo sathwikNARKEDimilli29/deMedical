@@ -27,7 +27,7 @@ contract BugBounty is Ownable, ReentrancyGuard {
     }
     
     struct Researcher {
-        address researcher Address;
+        address researcherAddress;
         uint256 totalReports;
         uint256 validReports;
         uint256 totalRewards;

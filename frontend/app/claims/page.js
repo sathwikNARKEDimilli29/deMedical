@@ -14,21 +14,23 @@ export default function Claims() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const loadClaims = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/claims?claimant=${account}`);
+        setClaims(response.data);
+      } catch (error) {
+        console.error('Failed to load claims:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (account) {
       loadClaims();
     }
   }, [account]);
 
-  const loadClaims = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/claims?claimant=${account}`);
-      setClaims(response.data);
-    } catch (error) {
-      console.error('Failed to load claims:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const statusConfig = {
     PENDING: { color: 'yellow', icon: <FaClock />, label: 'Pending' },
@@ -55,7 +57,7 @@ export default function Claims() {
         <div className="card text-center py-20">
           <FaFileAlt className="text-6xl text-dark-400 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-dark-900 mb-2">No Claims Yet</h3>
-          <p className="text-dark-600 mb-6">You haven't submitted any claims</p>
+          <p className="text-dark-600 mb-6">You haven&apos;t submitted any claims</p>
           <button className="btn-primary">Submit Your First Claim</button>
         </div>
       ) : (

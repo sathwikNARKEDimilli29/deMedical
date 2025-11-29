@@ -26,50 +26,52 @@ export default function Dashboard() {
     if (!authLoading && !account) {
       router.push('/auth/login');
     }
-  }, [account, authLoading]);
+  }, [account, authLoading, router]);
 
   useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // Fetch user's pools
+        const poolsRes = await axios.get(`${API_URL}/pools`);
+        const userPools = poolsRes.data.filter(p => 
+          p.members?.some(m => m.address.toLowerCase() === account.toLowerCase())
+        );
+
+        // Fetch user's claims
+        const claimsRes = await axios.get(`${API_URL}/claims?claimant=${account}`);
+        
+        // Fetch user's loans
+        const loansRes = await axios.get(`${API_URL}/loans?borrower=${account}`);
+        
+        // Fetch credit score
+        const creditRes = await axios.get(`${API_URL}/credit/${account}`);
+        
+        setStats({
+          pools: userPools.length,
+          claims: claimsRes.data.length,
+          loans: loansRes.data.length,
+          creditScore: creditRes.data.currentScore || 500
+        });
+
+        // Get AI recommendations
+        const recRes = await axios.post(`${API_URL}/ai/recommend`, {
+          creditScore: creditRes.data.currentScore || 500,
+          hasLoans: loansRes.data.length > 0,
+          poolMemberships: userPools.length
+        });
+        
+        setRecommendations(recRes.data.recommendations || []);
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      }
+    };
+
     if (account) {
       loadDashboardData();
     }
   }, [account]);
 
-  const loadDashboardData = async () => {
-    try {
-      // Fetch user's pools
-      const poolsRes = await axios.get(`${API_URL}/pools`);
-      const userPools = poolsRes.data.filter(p => 
-        p.members?.some(m => m.address.toLowerCase() === account.toLowerCase())
-      );
 
-      // Fetch user's claims
-      const claimsRes = await axios.get(`${API_URL}/claims?claimant=${account}`);
-      
-      // Fetch user's loans
-      const loansRes = await axios.get(`${API_URL}/loans?borrower=${account}`);
-      
-      // Fetch credit score
-      const creditRes = await axios.get(`${API_URL}/credit/${account}`);
-      
-      setStats({
-        pools: userPools.length,
-        claims: claimsRes.data.length,
-        loans: loansRes.data.length,
-        creditScore: creditRes.data.currentScore || 500
-      });
-
-      // Get AI recommendations
-      const recRes = await axios.post(`${API_URL}/ai/recommend`, {
-        creditScore: creditRes.data.currentScore || 500,
-        hasLoans: loansRes.data.length > 0,
-        poolMemberships: userPools.length
-      });
-      
-      setRecommendations(recRes.data.recommendations || []);
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    }
-  };
 
   if (authLoading || !account) {
     return (
@@ -98,7 +100,7 @@ export default function Dashboard() {
         <h1 className="text-4xl font-bold gradient-text mb-2">
           Welcome back, {user?.fullName || 'User'}!
         </h1>
-        <p className="text-dark-600 mb-8">Here's your dashboard overview</p>
+        <p className="text-dark-600 mb-8">Here&apos;s your dashboard overview</p>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

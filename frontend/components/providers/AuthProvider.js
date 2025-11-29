@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useWeb3 } from './Web3Provider';
 
@@ -23,15 +23,22 @@ export function AuthProvider({ children }) {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [loadUser]);
 
   useEffect(() => {
     if (account && token) {
       loadUser(token);
     }
-  }, [account]);
+  }, [account, token, loadUser]);
 
-  const loadUser = async (authToken) => {
+  const logout = useCallback(() => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('walletAddress');
+  }, []);
+
+  const loadUser = useCallback(async (authToken) => {
     try {
       const walletAddress = account || localStorage.getItem('walletAddress');
       if (!walletAddress) {
@@ -50,7 +57,7 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [account, logout]);
 
   const login = async (walletAddress) => {
     try {
@@ -90,12 +97,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('walletAddress');
-  };
+
 
   const updateProfile = async (profileData) => {
     try {

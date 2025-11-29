@@ -14,21 +14,23 @@ export default function CreditScore() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const loadCreditData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/credit/${account}`);
+        setCreditData(response.data);
+      } catch (error) {
+        console.error('Failed to load credit data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (account) {
       loadCreditData();
     }
   }, [account]);
 
-  const loadCreditData = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/credit/${account}`);
-      setCreditData(response.data);
-    } catch (error) {
-      console.error('Failed to load credit data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const getTierColor = (tier) => {
     const colors = {

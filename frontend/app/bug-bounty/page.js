@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useWeb3 } from '@/components/providers/Web3Provider';
 import { FaBug, FaTrophy, FaCheckCircle, FaClock, FaTimes, FaShieldAlt } from 'react-icons/fa';
@@ -21,9 +21,9 @@ export default function BugBounty() {
     if (account) {
       loadData();
     }
-  }, [account]);
+  }, [account, loadData]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       // Check if researcher is registered
       const researcherRes = await axios.get(`${API_URL}/bug-bounty/researcher/${account}`).catch(() => null);
@@ -42,7 +42,7 @@ export default function BugBounty() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [account]);
 
   const handleRegister = async () => {
     try {

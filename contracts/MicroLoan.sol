@@ -128,9 +128,9 @@ contract MicroLoan is ReentrancyGuard {
         require(!blacklistedFromPoolLoans[msg.sender], "Blacklisted from pool-backed loans");
         
         // Verify pool has sufficient funds
-        (,,,, uint256 poolBalance,,,,) = insurancePool.getPoolInfo(_poolId);
+        InsurancePool.Pool memory pool = insurancePool.getPoolInfo(_poolId);
         uint256 insuranceAmount = (_amount * 120) / 100; // 120% coverage
-        require(poolBalance >= insuranceAmount, "Insufficient pool balance");
+        require(pool.totalContributed >= insuranceAmount, "Insufficient pool balance");
         
         return _createLoan(_amount, _duration, _purpose, _ipfsHash, LoanType.POOL_BACKED, address(0), _poolId);
     }
