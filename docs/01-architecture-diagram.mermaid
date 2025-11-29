@@ -1,0 +1,139 @@
+graph TB
+    subgraph "Client Layer"
+        Browser[Web Browser + MetaMask]
+        Mobile[Mobile Wallet]
+    end
+    
+    subgraph "Presentation Layer - Port 3000"
+        NextJS[Next.js 14 Server<br/>SSR + App Router]
+        
+        subgraph "Frontend Components"
+            Pages[Pages<br/>Landing, Dashboard, Pools<br/>Claims, Loans, Credit, Payments]
+            Components[Shared Components<br/>Navbar, AI Assistant]
+            Providers[Context Providers<br/>Web3Provider, AuthProvider]
+        end
+        
+        NextJS --> Pages
+        NextJS --> Components
+        NextJS --> Providers
+    end
+    
+    subgraph "Application Layer - Port 5000"
+        Express[Express.js API Server]
+        
+        subgraph "API Routes"
+            AuthAPI[Auth Routes<br/>/api/auth/*]
+            PoolAPI[Pool Routes<br/>/api/pools/*]
+            ClaimAPI[Claim Routes<br/>/api/claims/*]
+            LoanAPI[Loan Routes<br/>/api/loans/*]
+            CreditAPI[Credit Routes<br/>/api/credit/*]
+            PaymentAPI[Payment Routes<br/>/api/payments/*]
+            IPFSAPI[IPFS Routes<br/>/api/ipfs/*]
+            AIAPI[AI Routes<br/>/api/ai/*]
+        end
+        
+        subgraph "Business Logic"
+            AuthService[Authentication Service<br/>JWT, Wallet Verification]
+            IPFSService[IPFS Service<br/>Pinata Integration]
+            AIService[AI Service<br/>Chatbot + Recommendations]
+        end
+        
+        Express --> AuthAPI
+        Express --> PoolAPI
+        Express --> ClaimAPI
+        Express --> LoanAPI
+        Express --> CreditAPI
+        Express --> PaymentAPI
+        Express --> IPFSAPI
+        Express --> AIAPI
+        
+        AuthAPI --> AuthService
+        IPFSAPI --> IPFSService
+        AIAPI --> AIService
+    end
+    
+    subgraph "Data Layer - Port 27017"
+        MongoDB[(MongoDB Database<br/>nishkama)]
+        
+        subgraph "Collections"
+            UserColl[Users Collection]
+            PoolColl[Pools Collection]
+            ClaimColl[Claims Collection]
+            LoanColl[Loans Collection]
+            CreditColl[Credit History Collection]
+        end
+        
+        MongoDB --> UserColl
+        MongoDB --> PoolColl
+        MongoDB --> ClaimColl
+        MongoDB --> LoanColl
+        MongoDB --> CreditColl
+    end
+    
+    subgraph "Blockchain Layer - Port 8545"
+        Hardhat[Hardhat Network<br/>localhost:8545<br/>Chain ID: 1337]
+        
+        subgraph "Smart Contracts"
+            UserReg[UserRegistry.sol<br/>User Management + KYC]
+            Credit[CreditScore.sol<br/>Credit Scoring 300-900]
+            Pool[InsurancePool.sol<br/>Pooled Insurance + Claims]
+            Loan[MicroLoan.sol<br/>Healthcare Loans]
+            Payment[PaymentPlan.sol<br/>BNPL + SNPL]
+        end
+        
+        Hardhat --> UserReg
+        Hardhat --> Credit
+        Hardhat --> Pool
+        Hardhat --> Loan
+        Hardhat --> Payment
+    end
+    
+    subgraph "External Services"
+        IPFS[IPFS/Pinata<br/>Document Storage]
+        MetaMask[MetaMask<br/>Wallet Provider]
+    end
+    
+    %% Client Connections
+    Browser <-->|HTTPS| NextJS
+    Browser <-->|REST API| Express
+    Browser <-->|JSON-RPC<br/>Web3| Hardhat
+    Browser <-->|Wallet Connection| MetaMask
+    Mobile <-->|JSON-RPC| Hardhat
+    
+    %% Frontend to Backend
+    Providers <-->|Axios<br/>HTTP Requests| Express
+    Providers <-->|ethers.js v6<br/>Contract Calls| Hardhat
+    
+    %% Backend to Database
+    AuthAPI <-->|Mongoose| UserColl
+    PoolAPI <-->|Mongoose| PoolColl
+    ClaimAPI <-->|Mongoose| ClaimColl
+    LoanAPI <-->|Mongoose| LoanColl
+    CreditAPI <-->|Mongoose| CreditColl
+    
+    %% Backend to External
+    IPFSService <-->|HTTP API| IPFS
+    
+    %% Smart Contract Dependencies
+    Pool -.->|depends on| UserReg
+    Pool -.->|uses| Credit
+    Loan -.->|depends on| UserReg
+    Loan -.->|uses| Credit
+    Payment -.->|depends on| UserReg
+    Payment -.->|uses| Credit
+    Credit -.->|depends on| UserReg
+    
+    %% Styling
+    classDef client fill:#e1f5ff,stroke:#0284c7,stroke-width:2px
+    classDef frontend fill:#61dafb,stroke:#0284c7,stroke-width:2px
+    classDef backend fill:#68a063,stroke:#4caf50,stroke-width:2px
+    classDef database fill:#4db33d,stroke:#2e7d32,stroke-width:2px
+    classDef blockchain fill:#f0b90b,stroke:#f57c00,stroke-width:2px
+    classDef external fill:#9c27b0,stroke:#7b1fa2,stroke-width:2px
+    
+    class Browser,Mobile client
+    class NextJS,Pages,Components,Providers frontend
+    class Express,AuthAPI,PoolAPI,ClaimAPI,LoanAPI,CreditAPI,PaymentAPI,IPFSAPI,AIAPI,AuthService,IPFSService,AIService backend
+    class MongoDB,UserColl,PoolColl,ClaimColl,LoanColl,CreditColl database
+    class Hardhat,UserReg,Credit,Pool,Loan,Payment blockchain
+    class IPFS,MetaMask external

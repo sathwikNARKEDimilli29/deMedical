@@ -19,11 +19,15 @@ backend/.env
 
 # Hardhat files
 cache/
-artifacts/
+# artifacts/  # Commented to allow project documentation artifacts
 typechain/
 typechain-types/
 coverage/
 coverage.json
+
+# Hardhat build artifacts only
+/artifacts/contracts/
+/artifacts/build-info/
 
 # Hardhat ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
