@@ -12,6 +12,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const ipfsRoutes = require('./routes/ipfsRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const bugBountyRoutes = require('./routes/bugBountyRoutes');
+const crowdFundingRoutes = require('./routes/crowdFundingRoutes');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/ipfs', ipfsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/bug-bounty', bugBountyRoutes);
+app.use('/api/crowdfunding', crowdFundingRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

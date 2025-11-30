@@ -141,18 +141,74 @@ classDiagram
         +ReportStatus status
         +uint256 reward
     }
+    
+    class CrowdFunding {
+        +mapping campaigns
+        +mapping campaignMilestones
+        +mapping campaignContributions
+        +mapping contributorAmount
+        +mapping hasVotedForApproval
+        +mapping creatorCampaigns
+        +mapping contributorCampaigns
+        +IUserRegistry userRegistry
+        +ICreditScore creditScore
+        +uint256 campaignCount
+        +uint256 totalFundsRaised
+        +uint256 approvalThreshold
+        +uint256 minApprovalVotes
+        +createCampaign(...) uint256
+        +voteForCampaignApproval(uint256, bool)
+        +approveCampaign(uint256)
+        +contribute(uint256) payable
+        +releaseMilestone(...)
+        +requestRefund(uint256)
+        +cancelCampaign(uint256)
+        +finalizeCampaign(uint256)
+        +getCampaign(uint256) Campaign
+    }
+    
+    class Campaign {
+        +uint256 campaignId
+        +address creator
+        +string title
+        +string description
+        +Category category
+        +uint256 goalAmount
+        +uint256 raisedAmount
+        +uint256 deadline
+        +string[] documents
+        +CampaignStatus status
+        +bool isApproved
+        +bool allOrNothing
+        +uint256 approvalVotes
+        +uint256 rejectionVotes
+        +uint256 createdAt
+        +uint256 contributorsCount
+    }
+    
+    class Milestone {
+        +string description
+        +uint256 amount
+        +bool isReleased
+        +uint256 releaseDate
+        +string proofIpfsHash
+    }
 
     UserRegistry <-- CreditScore : depends on
     UserRegistry <-- InsurancePool : depends on
     UserRegistry <-- MicroLoan : depends on
     UserRegistry <-- PaymentPlan : depends on
     UserRegistry <-- BugBounty : depends on
+    UserRegistry <-- CrowdFunding : depends on
     CreditScore <-- InsurancePool : uses
     CreditScore <-- MicroLoan : uses
     CreditScore <-- PaymentPlan : uses
+    CreditScore <-- CrowdFunding : uses
     InsurancePool <-- MicroLoan : uses
     InsurancePool "1" *-- "many" Pool : contains
     InsurancePool "1" *-- "many" Claim : manages
     MicroLoan "1" *-- "many" Loan : manages
     BugBounty "1" *-- "many" Researcher : tracks
     BugBounty "1" *-- "many" BugReport : manages
+    CrowdFunding "1" *-- "many" Campaign : manages
+    Campaign "1" *-- "many" Milestone : defines

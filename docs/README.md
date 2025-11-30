@@ -27,7 +27,7 @@ This directory contains comprehensive technical documentation, analysis reports,
 ### 2. Security Audit Report
 **File**: `02-security-audit-report.md`  
 **Format**: Markdown  
-**Description**: Comprehensive security analysis of all 6 smart contracts including:
+**Description**: Comprehensive security analysis of all 7 smart contracts including:
 - Executive summary with risk ratings
 - Contract-by-contract security analysis
 - 18 identified issues (0 Critical, 0 High, 4 Medium, 6 Low, 8 Informational)
@@ -47,6 +47,7 @@ This directory contains comprehensive technical documentation, analysis reports,
 4. MicroLoan.sol (Enhanced with 4 loan types)
 5. PaymentPlan.sol
 6. BugBounty.sol (Security vulnerability reporting)
+7. CrowdFunding.sol (Medical crowdfunding with milestones)
 
 ---
 
@@ -208,7 +209,8 @@ Study: `03-gas-optimization-report.md`
 | MicroLoan (Enhanced) | 2,100,000 | 1,750,000 | 17% |
 | PaymentPlan | 2,400,000 | 2,000,000 | 17% |
 | BugBounty | 1,200,000 | 1,000,000 | 17% |
-| **TOTAL** | **10,550,000** | **8,730,000** | **17%** |
+| CrowdFunding | 1,300,000 | 1,080,000 | 17% |
+| **TOTAL** | **11,850,000** | **9,810,000** | **17%** |
 
 ### Security Issues Summary
 

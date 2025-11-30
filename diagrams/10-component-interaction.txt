@@ -13,6 +13,7 @@ graph TB
         LoanService[Loan Service]
         IPFSService[IPFS Service]
         AIService[AI Service]
+        CrowdFundingService[CrowdFunding Service]
     end
     
     subgraph "Database Layer"
@@ -27,6 +28,8 @@ graph TB
         Pool[InsurancePool]
         Loan[MicroLoan]
         Payment[PaymentPlan]
+        BugBounty[BugBounty]
+        CrowdFunding[CrowdFunding]
     end
     
     NextJS --> Components
@@ -41,10 +44,12 @@ graph TB
     Express --> LoanService
     Express --> IPFSService
     Express --> AIService
+    Express --> CrowdFundingService
     
     AuthService <--> MongoDB
     PoolService <--> MongoDB
     LoanService <--> MongoDB
+    CrowdFundingService <--> MongoDB
     IPFSService <--> IPFS
     
     Network --> UserReg
@@ -52,6 +57,8 @@ graph TB
     Network --> Pool
     Network --> Loan
     Network --> Payment
+    Network --> BugBounty
+    Network --> CrowdFunding
     
     UserReg -.depends.-> Credit
     Pool -.uses.-> UserReg
@@ -60,6 +67,9 @@ graph TB
     Loan -.uses.-> Credit
     Payment -.uses.-> UserReg
     Payment -.uses.-> Credit
+    BugBounty -.uses.-> UserReg
+    CrowdFunding -.uses.-> UserReg
+    CrowdFunding -.uses.-> Credit
     
     style NextJS fill:#61dafb
     style Express fill:#68a063

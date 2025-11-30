@@ -20,12 +20,12 @@ This platform now includes comprehensive security enhancements:
 
 ## 📁 Files
 
-1. **00-application-summary.txt** - Complete Platform Summary (6 contracts, 28 use cases)
-2. **01-class-diagram.txt** - Smart Contract Class Diagram (including BugBounty & enhanced MicroLoan)
+1. **00-application-summary.txt** - Complete Platform Summary (7 contracts, 44 use cases)
+2. **01-class-diagram.txt** - Smart Contract Class Diagram (including BugBounty, enhanced MicroLoan & CrowdFunding)
 3. **02-er-diagram.txt** - Database ER Diagram (MongoDB Schema)
 4. **03-activity-registration.txt** - User Registration Activity Diagram
 5. **04-activity-claim-process.txt** - Claim Submission & Approval Activity Diagram
-6. **05-use-case-diagram.txt** - System Use Case Diagram (28 use cases)
+6. **05-use-case-diagram.txt** - System Use Case Diagram (44 use cases)
 7. **06-sequence-pool-join.txt** - Insurance Pool Join Sequence Diagram
 8. **07-sequence-loan-application.txt** - Micro-Loan Application Sequence Diagram
 9. **08-sequence-bnpl-flow.txt** - BNPL Payment Flow Sequence Diagram

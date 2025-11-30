@@ -58,22 +58,31 @@ async function main() {
   const bugBountyAddress = await bugBounty.getAddress();
   console.log("BugBounty deployed to:", bugBountyAddress);
   
+  // Deploy CrowdFunding
+  console.log("\n7. Deploying CrowdFunding...");
+  const CrowdFunding = await hre.ethers.getContractFactory("CrowdFunding");
+  const crowdFunding = await CrowdFunding.deploy(userRegistryAddress, creditScoreAddress);
+  await crowdFunding.waitForDeployment();
+  const crowdFundingAddress = await crowdFunding.getAddress();
+  console.log("CrowdFunding deployed to:", crowdFundingAddress);
+  
   // Authorize contracts in CreditScore
-  console.log("\n7. Authorizing contracts in CreditScore...");
+  console.log("\n8. Authorizing contracts in CreditScore...");
   await creditScore.authorizeContract(microLoanAddress);
   await creditScore.authorizeContract(paymentPlanAddress);
   await creditScore.authorizeContract(insurancePoolAddress);
+  await creditScore.authorizeContract(crowdFundingAddress);
   console.log("Contracts authorized");
   
   // Fund pools
-  console.log("\n8. Funding pools...");
+  console.log("\n9. Funding pools...");
   const fundAmount = hre.ethers.parseEther("100");
   await microLoan.fundPool({ value: fundAmount });
   await paymentPlan.fundPool({ value: fundAmount });
   console.log("Loan and Payment pools funded with 100 ETH each");
   
   // Fund bug bounty pool
-  console.log("\n9. Funding Bug Bounty pool...");
+  console.log("\n10. Funding Bug Bounty pool...");
   const bountyFund = hre.ethers.parseEther("50");
   await bugBounty.fundBountyPool({ value: bountyFund });
   console.log("Bug Bounty pool funded with 50 ETH");
@@ -87,6 +96,7 @@ async function main() {
   console.log("MicroLoan:     ", microLoanAddress);
   console.log("PaymentPlan:   ", paymentPlanAddress);
   console.log("BugBounty:     ", bugBountyAddress);
+  console.log("CrowdFunding:  ", crowdFundingAddress);
   
   console.log("\n📝 Add these to your .env file:");
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_REGISTRY=${userRegistryAddress}`);
@@ -95,6 +105,7 @@ async function main() {
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_LOAN=${microLoanAddress}`);
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_PAYMENT=${paymentPlanAddress}`);
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_BUGBOUNTY=${bugBountyAddress}`);
+  console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS_CROWDFUNDING=${crowdFundingAddress}`);
 }
 
 main()

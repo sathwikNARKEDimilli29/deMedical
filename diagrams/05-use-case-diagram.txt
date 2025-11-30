@@ -54,6 +54,17 @@ graph TB
             UC30[Validate Report]
             UC31[Award Bounty]
         end
+        
+        subgraph "Crowdfunding"
+            UC32[Create Campaign]
+            UC33[Contribute to Campaign]
+            UC34[Vote for Campaign Approval]
+            UC35[Release Milestone Funds]
+            UC36[Request Refund]
+            UC37[View Campaign Details]
+            UC38[Manage My Campaigns]
+            UC39[Share Campaign]
+        end
     end
     
     User((User)) --> UC1
@@ -83,6 +94,14 @@ graph TB
     User --> UC25
     User --> UC26
     User --> UC27
+    User --> UC32
+    User --> UC33
+    User --> UC34
+    User --> UC35
+    User --> UC36
+    User --> UC37
+    User --> UC38
+    User --> UC39
     
     Admin((Admin/KYC<br/>Verifier)) --> UC4
     Admin --> UC10
@@ -106,13 +125,21 @@ graph TB
     SmartContract -.-> UC29
     SmartContract -.-> UC30
     SmartContract -.-> UC31
+    SmartContract -.-> UC32
+    SmartContract -.-> UC33
+    SmartContract -.-> UC34
+    SmartContract -.-> UC35
+    SmartContract -.-> UC36
     
     Backend((Backend<br/>API)) -.-> UC2
     Backend -.-> UC3
     Backend -.-> UC16
     Backend -.-> UC23
     Backend -.-> UC24
+    Backend -.-> UC37
+    Backend -.-> UC38
     
     IPFS((IPFS<br/>Storage)) -.-> UC4
     IPFS -.-> UC9
     IPFS -.-> UC29
+    IPFS -.-> UC32

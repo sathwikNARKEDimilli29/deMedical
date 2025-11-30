@@ -16,9 +16,10 @@ A revolutionary blockchain-powered healthcare insurance platform featuring poole
 - **Save Now Pay Later (SNPL)**: Systematic savings for future medical needs
 - **AI Assistant**: 24/7 chatbot for guidance and recommendations
 - **🐛 Bug Bounty Program**: Rewards for security researchers ($200 - $50,000)
+- **💚 Medical Crowdfunding**: Community-funded campaigns with milestone releases
 
 ### Technical Features
-- Smart contracts built with Hardhat & Solidity (6 contracts)
+- Smart contracts built with Hardhat & Solidity (7 contracts)
 - Next.js 14 frontend with modern UI/UX
 - MongoDB database for off-chain data
 - IPFS integration for document storage
@@ -608,7 +609,9 @@ De-Medical/
 │   ├── CreditScore.sol
 │   ├── InsurancePool.sol
 │   ├── MicroLoan.sol
-│   └── PaymentPlan.sol
+│   ├── PaymentPlan.sol
+│   ├── BugBounty.sol
+│   └── CrowdFunding.sol
 ├── scripts/               # Deployment scripts
 │   └── deploy.js
 ├── test/                  # Contract tests
@@ -655,6 +658,20 @@ De-Medical/
 - Installment tracking
 - Late fee mechanisms
 
+### BugBounty
+- Security vulnerability reporting
+- Researcher registration and rewards
+- Dynamic bounty allocation
+- Reputation leaderboard
+
+### CrowdFunding
+- Medical campaign creation
+- Milestone-based fund releases
+- Community approval voting
+- All-or-nothing or keep-it-all models
+- Transparent backer tracking
+- Credit score integration
+
 ## 🌐 API Endpoints
 
 ### Authentication
@@ -682,6 +699,18 @@ De-Medical/
 - `POST /api/ai/chat` - Chat with AI
 - `POST /api/ai/recommend` - Get recommendations
 
+### Crowdfunding
+- `GET /api/crowdfunding` - Get all campaigns (with filters)
+- `GET /api/crowdfunding/:id` - Get campaign details
+- `POST /api/crowdfunding/create` - Create campaign
+- `POST /api/crowdfunding/:id/contribute` - Contribute to campaign
+- `POST /api/crowdfunding/:id/approve` - Vote for approval
+- `PUT /api/crowdfunding/:id` - Update campaign
+- `POST /api/crowdfunding/:id/milestone/:index/release` - Release milestone
+- `GET /api/crowdfunding/user/:address/created` - Get user's campaigns
+- `GET /api/crowdfunding/user/:address/contributions` - Get user contributions
+- `GET /api/crowdfunding/stats/overview` - Get statistics
+
 ## 🎨 Frontend Pages
 
 - `/` - Landing page
@@ -693,6 +722,10 @@ De-Medical/
 - `/loans` - Micro-loans
 - `/credit-score` - Credit score details
 - `/payment-plans` - BNPL/SNPL management
+- `/crowdfunding` - Browse campaigns
+- `/crowdfunding/[id]` - Campaign details
+- `/crowdfunding/create` - Create campaign
+- `/crowdfunding/my-campaigns` - Manage campaigns
 
 ## 🔐 Enhanced Security Features
 

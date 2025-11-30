@@ -57,7 +57,7 @@ De-Medical revolutionizes healthcare insurance by:
 
 ---
 
-## 📜 Smart Contracts (6 Total)
+## 📜 Smart Contracts (7 Total)
 
 ### 1. UserRegistry.sol
 **Purpose**: User management and KYC verification
@@ -93,6 +93,22 @@ De-Medical revolutionizes healthcare insurance by:
 **Severity Levels**: Critical, High, Medium, Low, Info (Dynamic Rewards)
 **Features**: Researcher registration, report management, leaderboard, reward distribution
 
+### 7. CrowdFunding.sol
+**Purpose**: Medical crowdfunding with milestone-based releases
+**Categories**: SURGERY, TREATMENT, MEDICATION, EMERGENCY, THERAPY, DIAGNOSTICS, OTHER
+**Features**: Community approval voting, milestone-based fund releases, all-or-nothing or keep-it-all refund models
+**Parameters**: Min 7 days, Max 365 days, Requires KYC, Approval threshold 60%
+**Milestones**: Creator-defined checkpoints for fund releases with proof requirements
+**Credit Impact**: Successful campaigns improve creator credit score (+10), failed campaigns decrease (-5)
+
+### 7. CrowdFunding.sol
+**Purpose**: Medical crowdfunding with milestone-based releases
+**Categories**: SURGERY, TREATMENT, MEDICATION, EMERGENCY, THERAPY, DIAGNOSTICS, OTHER
+**Features**: Community approval voting, milestone-based fund releases, all-or-nothing or keep-it-all refund models
+**Parameters**: Min 7 days, Max 365 days, Requires KYC, Approval threshold 60%
+**Milestones**: Creator-defined checkpoints for fund releases with proof requirements
+**Credit Impact**: Successful campaigns improve creator credit score (+10), failed campaigns decrease (-5)
+
 ---
 
 ## 🗄️ Database Schema (MongoDB)
@@ -102,6 +118,7 @@ De-Medical revolutionizes healthcare insurance by:
 **Claim**: claimId (UK), poolId (FK), claimant (FK), amount, description, documents, status (enum), votes[], approvalCount, rejectionCount
 **Loan**: loanId (UK), borrower (FK), principal, interestRate, duration, amountRepaid, status (enum), purpose, documents, repayments[]
 **CreditHistory**: userAddress (UK), currentScore (300-900), scoreHistory[], factors, tier (enum)
+**CrowdFunding**: campaignId (UK), creator (FK), title, description, category (enum), goalAmount, raisedAmount, deadline, documents[], status (enum), isApproved, allOrNothing, milestones[], contributors[], approvalVotes[], analytics
 
 ---
 
@@ -115,6 +132,7 @@ De-Medical revolutionizes healthcare insurance by:
 **Payments** (/payments): GET bnpl/:address, GET snpl/:address
 **IPFS** (/ipfs): POST upload (file), POST upload-json, GET url/:hash
 **AI** (/ai): POST chat, POST recommend
+**CrowdFunding** (/crowdfunding): GET all (filters: status, category), GET :campaignId, POST create, POST :campaignId/contribute, POST :campaignId/approve, PUT :campaignId, POST :campaignId/milestone/:index/release, GET user/:address/created, GET user/:address/contributions, GET stats/overview
 
 ---
 
@@ -128,6 +146,10 @@ De-Medical revolutionizes healthcare insurance by:
 **Loans** (/loans): Credit score display, application form, repayment
 **Credit Score** (/credit-score): Large score, tier, factor breakdown, tips
 **Payment Plans** (/payment-plans): BNPL/SNPL tabs, create/manage plans
+**CrowdFunding** (/crowdfunding): Campaign listing, filters (category, status), search, sorting
+**CrowdFunding Details** (/crowdfunding/[id]): Campaign info, contribution form, milestone tracking, backer list, documents, community voting
+**Create Campaign** (/crowdfunding/create): Multi-step form (basic info, documents, milestones, settings)
+**My Campaigns** (/crowdfunding/my-campaigns): User's created campaigns, contributions, milestone management, analytics
 
 ---
 
@@ -195,21 +217,23 @@ De-Medical/
 7. Multi-tier loan system (4 types: Unsecured, Collateralized, Co-Signed, Pool-Backed)
 8. Decentralized bug bounty program (on-chain security incentives)
 9. Insurance pool integration with loans (default coverage)
+10. Medical crowdfunding with milestone-based releases
+11. Community-driven campaign approval voting
 
 ---
 
 ## 📊 Statistics
 
-- 6 Smart Contracts (~2,000 LOC Solidity)
-- 12 Backend Files (~1,200 LOC JavaScript)
-- 20+ Frontend Components (~2,500 LOC React/Next.js)
-- 14 UML Diagrams (including 3 for enhanced features)
-- 35+ Test Cases
-- 28 Use Cases
+- 7 Smart Contracts (~2,900 LOC Solidity)
+- 13 Backend Files (~1,500 LOC JavaScript)
+- 25+ Frontend Components (~3,200 LOC React/Next.js)
+- 16 UML Diagrams
+- 50+ Test Cases
+- 44 Use Cases
 
 ---
 
-## 🎯 28 Use Cases
+## 🎯 44 Use Cases
 
 **User Management**: Register, Login, Update Profile, Upload KYC
 **Pools**: Create, Join, Contribute, View Details
@@ -219,6 +243,7 @@ De-Medical/
 **Payments**: Create BNPL, Pay Installment, Create SNPL, Make Deposit
 **AI**: Chat, Get Recommendations
 **Bug Bounty**: Register Researcher, Submit Report, Validate Report, Award Bounty
+**CrowdFunding**: Create Campaign, Contribute to Campaign, Vote for Approval, Release Milestone, Request Refund, View Campaign Details, Manage Campaigns, Share Campaign
 
 ---
 

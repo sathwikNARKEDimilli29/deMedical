@@ -1,0 +1,310 @@
+# CrowdFunding Sequence Diagrams - Nishkama Platform
+
+## 1. Campaign Creation Flow
+```
+@startuml
+actor Creator
+participant "Frontend" as FE
+participant "Backend API" as BE
+participant "IPFS (Pinata)" as IPFS
+participant "CrowdFunding\nContract" as CF
+participant "UserRegistry\nContract" as UR
+participant "CreditScore\nContract" as CS
+database "MongoDB" as DB
+
+Creator -> FE: Open /crowdfunding/create
+FE -> FE: Display multi-step form
+Creator -> FE: Fill campaign details\n(title, description, goal, etc.)
+Creator -> FE: Upload medical documents
+FE -> BE: POST /api/ipfs/upload
+BE -> IPFS: Upload documents
+IPFS --> BE: Return IPFS hashes
+BE --> FE: Document hashes
+Creator -> FE: Define milestones\n(descriptions + amounts)
+Creator -> FE: Select refund policy\n(all-or-nothing/keep-it-all)
+Creator -> FE: Submit campaign
+
+FE -> UR: Check isKYCVerified(creator)
+UR --> FE: true/false
+alt Not KYC Verified
+    FE --> Creator: Error: KYC Required
+else KYC Verified
+    FE -> CF: createCampaign(\ntitle, description,\ncategory, goal,\nduration, documents,\nallOrNothing, milestones)
+    CF -> UR: isKYCVerified(creator)
+    UR --> CF: true
+    CF -> CF: Validate milestones sum to goal
+    CF -> CF: Create campaign structure
+    CF -> CF: Set status = PENDING_APPROVAL
+    CF -> CF: Emit CampaignCreated event
+    CF --> FE: Campaign ID
+    
+    FE -> BE: POST /api/crowdfunding/create\n(campaign data + IPFS hashes)
+    BE -> DB: Insert campaign document
+    DB --> BE: Success
+    BE --> FE: Campaign created
+    
+    FE --> Creator: Success! Redirect to campaign page
+end
+
+@enduml
+```
+
+## 2. Contribution Flow
+```
+@startuml
+actor Backer
+participant "Frontend" as FE
+participant "Backend API" as BE
+participant "CrowdFunding\nContract" as CF
+participant "CreditScore\nContract" as CS
+database "MongoDB" as DB
+
+Backer -> FE: Navigate to /crowdfunding/{id}
+FE -> BE: GET /api/crowdfunding/{id}
+BE -> DB: Fetch campaign
+DB --> BE: Campaign data
+BE --> FE: Campaign details
+FE --> Backer: Display campaign page
+
+Backer -> FE: Enter contribution amount
+Backer -> FE: Click "Contribute Now"
+
+FE -> CF: Get campaign status
+CF --> FE: Campaign info
+alt Campaign Not Active or Expired
+    FE --> Backer: Error: Cannot contribute
+else Campaign Active
+    FE -> FE: Request MetaMask approval
+    Backer -> FE: Approve transaction
+    
+    FE -> CF: contribute(campaignId) {value: amount}
+    CF -> CF: Validate campaign is ACTIVE
+    CF -> CF: Validate deadline not passed
+    CF -> CF: Record contribution
+    CF -> CF: Update raisedAmount
+    CF -> CF: Increment contributorsCount
+    CF -> CF: Emit ContributionReceived event
+    
+    alt Goal Reached
+        CF -> CF: Set status = SUCCESSFUL
+        CF -> CS: updateScore(creator, +10,\n"Successful campaign")
+        CS -> CS: Update creator score
+        CF -> CF: Emit CampaignStatusChanged
+    end
+    
+    CF --> FE: Transaction receipt
+    
+    FE -> BE: POST /api/crowdfunding/{id}/contribute\n(contributor, amount, txHash)
+    BE -> DB: Add contribution record
+    BE -> DB: Update raisedAmount
+    BE -> DB: Calculate avgContribution
+    DB --> BE: Success
+    BE --> FE: Updated campaign data
+    
+    FE --> Backer: Contribution successful! 💚
+end
+
+@enduml
+```
+
+## 3. Milestone Release Flow
+```
+@startuml
+actor Creator
+participant "Frontend" as FE
+participant "Backend API" as BE
+participant "IPFS (Pinata)" as IPFS
+participant "CrowdFunding\nContract" as CF
+database "MongoDB" as DB
+
+Creator -> FE: Navigate to /crowdfunding/my-campaigns
+FE -> BE: GET /api/crowdfunding/user/{address}/created
+BE -> DB: Fetch creator's campaigns
+DB --> BE: Campaign list
+BE --> FE: Campaign data
+FE --> Creator: Display campaigns with milestones
+
+Creator -> FE: View successful campaign
+FE --> Creator: Show unreleased milestones
+
+Creator -> FE: Upload proof documents\n(medical bills, reports)
+FE -> BE: POST /api/ipfs/upload
+BE -> IPFS: Upload proof
+IPFS --> BE: Proof IPFS hash
+BE --> FE: Hash returned
+
+Creator -> FE: Click "Release Milestone X"
+
+FE -> CF: releaseMilestone(\ncampaignId,\nmilestoneIndex,\nproofIpfsHash)
+
+CF -> CF: Validate sender is creator
+CF -> CF: Validate campaign status
+CF -> CF: Validate milestone not released
+CF -> CF: Validate sufficient funds
+
+CF -> CF: Mark milestone as released
+CF -> CF: Set releaseDate = now
+CF -> CF: Store proof hash
+CF -> CF: Transfer funds to creator
+CF -> CF: Emit MilestoneReleased event
+CF -> CF: Emit FundsWithdrawn event
+CF --> FE: Transaction receipt
+
+FE -> BE: POST /api/crowdfunding/{id}/milestone/{index}/release\n(proofIpfsHash)
+BE -> DB: Update milestone status
+BE -> DB: Set isReleased = true
+BE -> DB: Set releaseDate
+DB --> BE: Success
+BE --> FE: Updated milestone data
+
+FE --> Creator: Milestone funds released!\nETH transferred to your wallet
+
+@enduml
+```
+
+## 4. Refund Flow (Failed All-or-Nothing Campaign)
+```
+@startuml
+actor Backer
+participant "Frontend" as FE
+participant "Backend API" as BE
+participant "CrowdFunding\nContract" as CF
+participant "CreditScore\nContract" as CS
+database "MongoDB" as DB
+
+note over FE,CF: Campaign deadline has passed\nGoal not reached\nAllOrNothing = true
+
+Backer -> FE: Visit campaign page
+FE -> BE: GET /api/crowdfunding/{id}
+BE -> DB: Fetch campaign
+DB --> BE: Campaign data
+BE --> FE: Campaign info
+FE --> Backer: Show campaign (not successful)
+
+alt Campaign Still ACTIVE (not finalized)
+    Backer -> FE: Click "Finalize Campaign"
+    FE -> CF: finalizeCampaign(campaignId)
+    CF -> CF: Verify deadline passed
+    CF -> CF: Verify raisedAmount < goalAmount
+    CF -> CF: Set status = FAILED
+    CF -> CS: updateScore(creator, -5,\n"Failed campaign")
+    CS -> CS: Decrease creator score
+    CF -> CF: Emit CampaignStatusChanged
+    CF --> FE: Campaign finalized
+    
+    FE -> BE: PUT /api/crowdfunding/{id}\n{status: "FAILED"}
+    BE -> DB: Update status
+    DB --> BE: Success
+end
+
+Backer -> FE: Click "Request Refund"
+
+FE -> CF: requestRefund(campaignId)
+CF -> CF: Validate allOrNothing = true
+CF -> CF: Validate status = FAILED or CANCELLED
+CF -> CF: Validate backer has contributions
+CF -> CF: Get contributorAmount[campaignId][backer]
+CF -> CF: Reset contributorAmount to 0
+CF -> CF: Transfer refund to backer
+CF -> CF: Emit RefundIssued event
+CF --> FE: Transaction receipt
+
+FE --> Backer: Refund successful!\nFunds returned to your wallet
+
+@enduml
+```
+
+## 5. Community Approval Voting Flow
+```
+@startuml
+actor Voter
+participant "Frontend" as FE
+participant "Backend API" as BE
+participant "CrowdFunding\nContract" as CF
+database "MongoDB" as DB
+
+Voter -> FE: Browse campaigns
+FE -> BE: GET /api/crowdfunding?status=PENDING_APPROVAL
+BE -> DB: Fetch pending campaigns
+DB --> BE: Campaign list
+BE --> FE: Campaigns data
+FE --> Voter: Show pending campaigns
+
+Voter -> FE: View campaign details
+FE --> Voter: Display campaign info +\nvoting buttons (Approve/Reject)
+
+Voter -> FE: Click "Approve" or "Reject"
+
+FE -> CF: voteForCampaignApproval(\ncampaignId, approved)
+
+CF -> CF: Validate status = PENDING_APPROVAL
+CF -> CF: Validate voter not creator
+CF -> CF: Validate voter hasn't voted
+CF -> CF: Record vote
+CF -> CF: Increment approvalVotes or rejectionVotes
+CF -> CF: Emit CampaignApprovalVote event
+
+CF -> CF: Calculate totalVotes
+CF -> CF: Check if totalVotes >= minApprovalVotes
+alt Approval Threshold Met
+    CF -> CF: Calculate approval percentage
+    alt Percentage >= 60%
+        CF -> CF: Set isApproved = true
+        CF -> CF: Set status = ACTIVE
+        CF -> CF: Emit CampaignApproved event
+        CF -> CF: Emit CampaignStatusChanged event
+    end
+end
+
+CF --> FE: Transaction receipt
+
+FE -> BE: POST /api/crowdfunding/{id}/approve\n(voter, approved)
+BE -> DB: Add approval vote record
+DB --> BE: Success
+BE --> FE: Vote recorded
+
+FE --> Voter: Vote submitted!\n[Status updated if approved]
+
+@enduml
+```
+
+## Key Flows Summary
+
+### 1. Campaign Creation
+- Creator fills multi-step form
+- Uploads medical documents to IPFS
+- Defines milestones that sum to goal
+- Selects refund policy
+- Campaign starts in PENDING_APPROVAL status
+
+### 2. Contribution
+- Backers contribute ETH to active campaigns
+- Contributions tracked on-chain and off-chain
+- Campaign marked SUCCESSFUL when goal reached
+- Creator credit score improves on success
+
+### 3. Milestone Release
+- Creator uploads proof of milestone completion
+- Funds released in stages
+- Transparent fund management
+- Full audit trail maintained
+
+### 4. Refund Process
+- For all-or-nothing campaigns that fail
+- Campaign finalized after deadline
+- Backers request refunds individually
+- Creator credit score decreases
+
+### 5. Community Approval
+- Democratic voting for new campaigns
+- Prevents fraudulent campaigns
+- 60% approval threshold
+- Minimum 3 votes required
+
+### Security Features
+- KYC verification required for creators
+- Community approval voting
+- Milestone-based releases (not lump sum)
+- ReentrancyGuard on all fund transfers
+- Proof requirements for milestone releases
+- Credit score integration (reputation system)

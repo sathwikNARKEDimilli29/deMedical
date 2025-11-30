@@ -290,4 +290,297 @@ describe("Nishkama Insurance Platform", function () {
       expect(plan.savedAmount).to.equal(ethers.parseEther("1"));
     });
   });
+  
+  describe("CrowdFunding", function () {
+    let crowdFunding;
+    
+    beforeEach(async function () {
+      // Deploy CrowdFunding contract
+      const CrowdFunding = await ethers.getContractFactory("CrowdFunding");
+      crowdFunding = await CrowdFunding.deploy(
+        await userRegistry.getAddress(),
+        await creditScore.getAddress()
+      );
+      await crowdFunding.waitForDeployment();
+      
+      // Authorize CrowdFunding in CreditScore
+      await creditScore.authorizeContract(await crowdFunding.getAddress());
+      
+      // Register and verify users
+      for (const user of [user1, user2, user3]) {
+        await userRegistry.connect(user).registerUser("QmTestHash");
+        await userRegistry.connect(kycVerifier).verifyKYC(user.address);
+        await creditScore.initializeCreditScore(user.address);
+      }
+    });
+    
+    it("Should create a new campaign", async function () {
+      const milestones = [
+        { description: "Initial consultation", amount: ethers.parseEther("1"), isReleased: false },
+        { description: "Surgery", amount: ethers.parseEther("4"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Help with surgery",
+        "I need help with medical surgery",
+        0, // SURGERY category
+        ethers.parseEther("5"),
+        30, // 30 days
+        ["QmDoc1", "QmDoc2"],
+        true, // all-or-nothing
+        milestones
+      );
+      
+      const campaign = await crowdFunding.getCampaign(1);
+      expect(campaign.creator).to.equal(user1.address);
+      expect(campaign.title).to.equal("Help with surgery");
+      expect(campaign.goalAmount).to.equal(ethers.parseEther("5"));
+    });
+    
+    it("Should fail without KYC verification", async function () {
+      const milestones = [
+        { description: "Treatment", amount: ethers.parseEther("1"), isReleased: false }
+      ];
+      
+      const [unverifiedUser] = await ethers.getSigners();
+      await userRegistry.connect(unverifiedUser).registerUser("QmTestHash");
+      
+      await expect(
+        crowdFunding.connect(unverifiedUser).createCampaign(
+          "Test",
+          "Description",
+          0,
+          ethers.parseEther("1"),
+          10,
+          [],
+          true,
+          milestones
+        )
+      ).to.be.revertedWith("KYC verification required");
+    });
+    
+    it("Should allow community to vote for approval", async function () {
+      const milestones = [
+        { description: "Treatment", amount: ethers.parseEther("2"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Medical Treatment",
+        "Need help",
+        1, // TREATMENT
+        ethers.parseEther("2"),
+        30,
+        [],
+        true,
+        milestones
+      );
+      
+      // Vote for approval
+      await crowdFunding.connect(user2).voteForCampaignApproval(1, true);
+      await crowdFunding.connect(user3).voteForCampaignApproval(1, true);
+      
+      // Check if approved (should auto-approve with 2 votes, threshold 60%)
+      const campaign = await crowdFunding.getCampaign(1);
+      expect(campaign.isApproved).to.be.true;
+      expect(campaign.status).to.equal(1); // ACTIVE
+    });
+    
+    it("Should allow contributions to active campaign", async function () {
+      const milestones = [
+        { description: "Surgery", amount: ethers.parseEther("3"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Surgery Fund",
+        "Help needed",
+        0,
+        ethers.parseEther("3"),
+        30,
+        [],
+        true,
+        milestones
+      );
+      
+      // Admin approval to make it active
+      await crowdFunding.approveCampaign(1);
+      
+      // Contribute
+      await crowdFunding.connect(user2).contribute(1, {
+        value: ethers.parseEther("1")
+      });
+      
+      const campaign = await crowdFunding.getCampaign(1);
+      expect(campaign.raisedAmount).to.equal(ethers.parseEther("1"));
+      expect(campaign.contributorsCount).to.equal(1n);
+    });
+    
+    it("Should mark campaign as successful when goal reached", async function () {
+      const milestones = [
+        { description: "Milestone 1", amount: ethers.parseEther("2"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Test Campaign",
+        "Description",
+        0,
+        ethers.parseEther("2"),
+        30,
+        [],
+        true,
+        milestones
+      );
+      
+      await crowdFunding.approveCampaign(1);
+      
+      // Contribute enough to reach goal
+      await crowdFunding.connect(user2).contribute(1, {
+        value: ethers.parseEther("2")
+      });
+      
+      const campaign = await crowdFunding.getCampaign(1);
+      expect(campaign.status).to.equal(2); // SUCCESSFUL
+    });
+    
+    it("Should allow creator to release milestone funds", async function () {
+      const milestones = [
+        { description: "First milestone", amount: ethers.parseEther("1"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Fund",
+        "Desc",
+        0,
+        ethers.parseEther("1"),
+        30,
+        [],
+        false, // keep-it-all
+        milestones
+      );
+      
+      await crowdFunding.approveCampaign(1);
+      
+      await crowdFunding.connect(user2).contribute(1, {
+        value: ethers.parseEther("1")
+      });
+      
+      const balanceBefore = await ethers.provider.getBalance(user1.address);
+      
+      await crowdFunding.connect(user1).releaseMilestone(1, 0, "QmProof");
+      
+      const balanceAfter = await ethers.provider.getBalance(user1.address);
+      expect(balanceAfter).to.be.greaterThan(balanceBefore);
+      
+      const milestoneData = await crowdFunding.getCampaignMilestones(1);
+      expect(milestoneData[0].isReleased).to.be.true;
+    });
+    
+    it("Should allow refund for failed all-or-nothing campaign", async function () {
+      const milestones = [
+        { description: "Milestone", amount: ethers.parseEther("5"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Campaign",
+        "Desc",
+        0,
+        ethers.parseEther("5"),
+        1, // 1 day (short for testing)
+        [],
+        true, // all-or-nothing
+        milestones
+      );
+      
+      await crowdFunding.approveCampaign(1);
+      
+      await crowdFunding.connect(user2).contribute(1, {
+        value: ethers.parseEther("2")
+      });
+      
+      // Increase time past deadline
+      await ethers.provider.send("evm_increaseTime", [2 * 24 * 60 * 60]);
+      await ethers.provider.send("evm_mine");
+      
+      // Finalize campaign (marks as FAILED)
+      await crowdFunding.finalizeCampaign(1);
+      
+      const balanceBefore = await ethers.provider.getBalance(user2.address);
+      
+      // Request refund
+      await crowdFunding.connect(user2).requestRefund(1);
+      
+      const balanceAfter = await ethers.provider.getBalance(user2.address);
+      expect(balanceAfter).to.be.greaterThan(balanceBefore);
+    });
+    
+    it("Should allow campaign cancellation before contributions", async function () {
+      const milestones = [
+        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Campaign",
+        "Desc",
+        0,
+        ethers.parseEther("1"),
+        10,
+        [],
+        true,
+        milestones
+      );
+      
+      await crowdFunding.connect(user1).cancelCampaign(1);
+      
+      const campaign = await crowdFunding.getCampaign(1);
+      expect(campaign.status).to.equal(4); // CANCELLED
+    });
+    
+    it("Should prevent creator from voting on own campaign", async function () {
+      const milestones = [
+        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Campaign",
+        "Desc",
+        0,
+        ethers.parseEther("1"),
+        10,
+        [],
+        true,
+        milestones
+      );
+      
+      await expect(
+        crowdFunding.connect(user1).voteForCampaignApproval(1, true)
+      ).to.be.revertedWith("Creator cannot vote");
+    });
+    
+    it("Should update credit score on successful campaign", async function () {
+      const milestones = [
+        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false }
+      ];
+      
+      await crowdFunding.connect(user1).createCampaign(
+        "Campaign",
+        "Desc",
+        0,
+        ethers.parseEther("1"),
+        30,
+        [],
+        true,
+        milestones
+      );
+      
+      await crowdFunding.approveCampaign(1);
+      
+      const scoreBefore = await creditScore.getCreditScore(user1.address);
+      
+      await crowdFunding.connect(user2).contribute(1, {
+        value: ethers.parseEther("1")
+      });
+      
+      const scoreAfter = await creditScore.getCreditScore(user1.address);
+      expect(scoreAfter).to.be.greaterThan(scoreBefore);
+    });
+  });
 });

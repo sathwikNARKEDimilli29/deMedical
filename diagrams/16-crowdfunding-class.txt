@@ -1,0 +1,360 @@
+# CrowdFunding Class Diagram - Nishkama Platform
+
+```
+@startuml
+
+!define ENTITY class
+!define INTERFACE interface
+
+' ========== Smart Contracts ==========
+
+ENTITY CrowdFunding <<Contract>> {
+  - IUserRegistry userRegistry
+  - ICreditScore creditScore
+  - uint256 campaignCount
+  - uint256 totalFundsRaised
+  - uint256 approvalThreshold
+  - uint256 minApprovalVotes
+  - mapping(uint256 => Campaign) campaigns
+  - mapping(uint256 => Milestone[]) campaignMilestones
+  - mapping(uint256 => Contribution[]) campaignContributions
+  - mapping(uint256 => mapping(address => uint256)) contributorAmount
+  - mapping(uint256 => mapping(address => bool)) hasVotedForApproval
+  - mapping(address => uint256[]) creatorCampaigns
+  - mapping(address => uint256[]) contributorCampaigns
+  
+  + createCampaign(title, description, category, goalAmount, durationDays, documents, allOrNothing, milestones): uint256
+  + voteForCampaignApproval(campaignId, approve): void
+  + approveCampaign(campaignId): void (onlyOwner)
+  + contribute(campaignId): void (payable)
+  + releaseMilestone(campaignId, milestoneIndex, proofIpfsHash): void
+  + requestRefund(campaignId): void
+  + cancelCampaign(campaignId): void
+  + finalizeCampaign(campaignId): void
+  + getCampaign(campaignId): Campaign
+  + getCampaignMilestones(campaignId): Milestone[]
+  + getCampaignContributions(campaignId): Contribution[]
+  + getCreatorCampaigns(creator): uint256[]
+  + getContributorCampaigns(contributor): uint256[]
+  + getCampaignProgress(campaignId): (raised, goal, percentage, contributors, timeRemaining)
+}
+
+ENTITY Campaign <<Struct>> {
+  + uint256 campaignId
+  + address creator
+  + string title
+  + string description
+  + Category category
+  + uint256 goalAmount
+  + uint256 raisedAmount
+  + uint256 deadline
+  + string[] documents
+  + CampaignStatus status
+  + bool isApproved
+  + bool allOrNothing
+  + uint256 approvalVotes
+  + uint256 rejectionVotes
+  + uint256 createdAt
+  + uint256 contributorsCount
+}
+
+ENTITY Milestone <<Struct>> {
+  + string description
+  + uint256 amount
+  + bool isReleased
+  + uint256 releaseDate
+  + string proofIpfsHash
+}
+
+ENTITY Contribution <<Struct>> {
+  + address contributor
+  + uint256 amount
+  + uint256 timestamp
+  + bool refunded
+}
+
+enum CampaignStatus {
+  PENDING_APPROVAL
+  ACTIVE
+  SUCCESSFUL
+  FAILED
+  CANCELLED
+}
+
+enum Category {
+  SURGERY
+  TREATMENT
+  MEDICATION
+  EMERGENCY
+  THERAPY
+  DIAGNOSTICS
+  OTHER
+}
+
+' ========== External Interfaces ==========
+
+INTERFACE IUserRegistry <<Interface>> {
+  + isKYCVerified(user): bool
+}
+
+INTERFACE ICreditScore <<Interface>> {
+  + updateScore(user, change, reason): void
+}
+
+' ========== MongoDB Schemas ==========
+
+ENTITY CrowdFundingModel <<MongoDB>> {
+  + campaignId: Number (unique)
+  + creator: String (lowercase)
+  + title: String (required)
+  + description: String (required)
+  + category: String (enum) [SURGERY, TREATMENT, etc.]
+  + goalAmount: String (required)
+  + raisedAmount: String (default: '0')
+  + deadline: Date (required)
+  + documents: String[]
+  + status: String (enum) [PENDING_APPROVAL, ACTIVE, etc.]
+  + isApproved: Boolean (default: false)
+  + allOrNothing: Boolean (default: true)
+  + milestones: MilestoneSchema[]
+  + contributors: ContributionSchema[]
+  + contributorsCount: Number (default: 0)
+  + approvalVotes: ApprovalVoteSchema[]
+  + analytics: AnalyticsSchema
+  + timestamps: true
+  
+  <<indexes>>
+  - campaignId: 1
+  - creator: 1
+  - status: 1
+  - category: 1
+  - deadline: 1
+}
+
+ENTITY MilestoneSchema <<Embedded>> {
+  + description: String (required)
+  + amount: String (required)
+  + isReleased: Boolean (default: false)
+  + releaseDate: Date
+  + proofIpfsHash: String
+}
+
+ENTITY ContributionSchema <<Embedded>> {
+  + contributor: String (required)
+  + amount: String (required)
+  + timestamp: Date (default: now)
+  + transactionHash: String
+  + refunded: Boolean (default: false)
+}
+
+ENTITY ApprovalVoteSchema <<Embedded>> {
+  + voter: String (required)
+  + approved: Boolean (required)
+  + timestamp: Date (default: now)
+}
+
+ENTITY AnalyticsSchema <<Embedded>> {
+  + viewCount: Number (default: 0)
+  + shareCount: Number (default: 0)
+  + averageContribution: String (default: '0')
+}
+
+' ========== API Routes ==========
+
+ENTITY CrowdFundingRoutes <<Express Router>> {
+  + GET /: Get all campaigns with filters
+  + GET /:campaignId: Get campaign by ID
+  + POST /create: Create new campaign
+  + POST /:campaignId/contribute: Record contribution
+  + POST /:campaignId/approve: Vote for approval
+  + PUT /:campaignId: Update campaign
+  + POST /:campaignId/milestone/:milestoneIndex/release: Release milestone
+  + GET /user/:address/created: Get user's created campaigns
+  + GET /user/:address/contributions: Get user's contributions
+  + GET /stats/overview: Get platform statistics
+}
+
+' ========== Frontend Components ==========
+
+ENTITY CrowdFundingListPage <<Next.js Page>> {
+  - campaigns: Campaign[]
+  - filteredCampaigns: Campaign[]
+  - selectedCategory: string
+  - selectedStatus: string
+  - searchQuery: string
+  - sortBy: string
+  
+  + loadCampaignsAndStats(): void
+  + filterCampaigns(): void
+  + calculateProgress(raised, goal): number
+  + getTimeRemaining(deadline): string
+}
+
+ENTITY CampaignDetailsPage <<Next.js Page>> {
+  - campaign: Campaign
+  - contributionAmount: string
+  - contributing: boolean
+  
+  + loadCampaign(): void
+  + handleContribute(): void
+  + handleVoteApprove(approve): void
+  + calculateProgress(): number
+  + getTimeRemaining(): string
+  + handleShare(): void
+}
+
+ENTITY CreateCampaignPage <<Next.js Page>> {
+  - step: number
+  - formData: FormData
+  - milestones: Milestone[]
+  - loading: boolean
+  
+  + handleInputChange(event): void
+  + handleMilestoneChange(index, field, value): void
+  + addMilestone(): void
+  + removeMilestone(index): void
+  + handleDocumentUpload(files): void
+  + validateStep(): boolean
+  + nextStep(): void
+  + previousStep(): void
+  + handleSubmit(): void
+}
+
+ENTITY MyCampaignsPage <<Next.js Page>> {
+  - activeTab: string [created|contributed]
+  - createdCampaigns: Campaign[]
+  - contributedCampaigns: ContributionData[]
+  - releasingMilestone: string
+  
+  + loadData(): void
+  + handleReleaseMilestone(campaignId, milestoneIndex): void
+  + calculateProgress(raised, goal): number
+  + getTotalContributed(): number
+  + getTotalRaisedFromMyCampaigns(): number
+  + getSuccessRate(): number
+}
+
+' ========== Relationships ==========
+
+CrowdFunding "1" *-- "*" Campaign : contains
+CrowdFunding "1" *-- "*" Milestone : stores per campaign
+CrowdFunding "1" *-- "*" Contribution : tracks
+CrowdFunding --> IUserRegistry : validates KYC
+CrowdFunding --> ICreditScore : updates scores
+
+Campaign "1" *-- "1..*" Milestone : defines
+Campaign "1" o-- "*" Contribution : receives
+Campaign ..> CampaignStatus : uses
+Campaign ..> Category : categorized by
+
+CrowdFundingModel "1" *-- "*" MilestoneSchema : embeds
+CrowdFundingModel "1" *-- "*" ContributionSchema : embeds
+CrowdFundingModel "1" *-- "*" ApprovalVoteSchema : embeds
+CrowdFundingModel "1" *-- "1" AnalyticsSchema : embeds
+
+CrowdFundingRoutes --> CrowdFundingModel : queries/updates
+CrowdFundingRoutes ..> Campaign : returns data
+
+CrowdFundingListPage --> CrowdFundingRoutes : HTTP requests
+CampaignDetailsPage --> CrowdFundingRoutes : HTTP requests
+CampaignDetailsPage --> CrowdFunding : blockchain calls
+CreateCampaignPage --> CrowdFundingRoutes : HTTP requests
+CreateCampaignPage --> CrowdFunding : blockchain calls
+MyCampaignsPage --> CrowdFundingRoutes : HTTP requests
+MyCampaignsPage --> CrowdFunding : blockchain calls
+
+@enduml
+```
+
+## Component Descriptions
+
+### Smart Contract Layer
+
+**CrowdFunding Contract**
+- Main contract managing all crowdfunding operations
+- Integrates with UserRegistry for KYC verification
+- Integrates with CreditScore for reputation management
+- Handles campaign creation, contributions, milestone releases, and refunds
+- Implements community approval voting mechanism
+
+**Campaign Struct**
+- Core data structure for campaign information
+- Tracks funding progress and status
+- Links to milestones and contributions
+
+**Milestone Struct**
+- Defines fund release checkpoints
+- Requires proof of completion
+- Enables transparent fund management
+
+**Contribution Struct**
+- Records individual backer contributions
+- Tracks refund status
+- Maintains contribution history
+
+### Database Layer
+
+**CrowdFundingModel**
+- MongoDB schema for off-chain data persistence
+- Stores campaign metadata and analytics
+- Indexes for efficient querying
+- Embedded schemas for related data
+
+**Embedded Schemas**
+- MilestoneSchema: Milestone details
+- ContributionSchema: Contribution records
+- ApprovalVoteSchema: Voting history
+- AnalyticsSchema: View counts and metrics
+
+### API Layer
+
+**CrowdFundingRoutes**
+- RESTful API endpoints
+- Handles CRUD operations
+- Filters and pagination support
+- Statistics aggregation
+
+### Frontend Layer
+
+**CrowdFundingListPage**
+- Browse all campaigns
+- Filter by category and status
+- Search functionality
+- Sorting options
+
+**CampaignDetailsPage**
+- Full campaign information
+- Contribution interface
+- Milestone tracking
+- Community voting
+- Backer list
+
+**CreateCampaignPage**
+- Multi-step campaign creation wizard
+- Document upload to IPFS
+- Milestone management
+- Validation logic
+
+**MyCampaignsPage**
+- Dashboard for created campaigns
+- Contribution history
+- Milestone management
+- Analytics view
+
+## Data Flow
+
+1. **Campaign Creation**: Frontend → Smart Contract → Backend API → MongoDB
+2. **Contribution**: Frontend → Smart Contract → Backend API → MongoDB
+3. **Milestone Release**: Frontend → Smart Contract → Backend API → MongoDB
+4. **Queries**: Frontend → Backend API → MongoDB → Frontend
+5. **Credit Updates**: Smart Contract → CreditScore Contract
+
+## Key Features
+
+- **Decentralized**: Campaign data on blockchain
+- **Transparent**: All transactions visible
+- **Secure**: KYC verification, ReentrancyGuard
+- **Democratic**: Community approval voting
+- **Milestone-Based**: Gradual fund releases
+- **Flexible**: Multiple refund models
+- **Integrated**: Credit score system
