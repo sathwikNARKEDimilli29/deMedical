@@ -1,0 +1,160 @@
+graph TB
+    subgraph Client["Client Layer"]
+        Browser[Web Browser]
+        MetaMask[MetaMask Wallet]
+    end
+    
+    subgraph Frontend["Frontend Layer - Next.js 14 (Port 3000)"]
+        Pages[Pages/Routes]
+        Components[React Components]
+        Web3Provider[Web3 Provider - ethers.js]
+        StateManagement[State Management]
+        UIFramework[TailwindCSS + Framer Motion]
+    end
+    
+    subgraph Backend["Backend Layer - Express.js (Port 5000)"]
+        APIGateway[API Gateway]
+        
+        subgraph Services["Services"]
+            AuthService[Auth Service - JWT]
+            PoolService[Insurance Pool Service]
+            LoanService[Loan Service]
+            ClaimService[Claim Service]
+            CreditService[Credit Service]
+            PaymentService[Payment Plans Service]
+            CrowdFundingService[CrowdFunding Service]
+            BountyService[Bug Bounty Service]
+            IPFSService[IPFS Service - Pinata]
+            AIService[AI Assistant Service]
+        end
+        
+        subgraph Middleware["Middleware"]
+            AuthMiddleware[Authentication]
+            ValidationMiddleware[Validation]
+            ErrorHandler[Error Handler]
+        end
+    end
+    
+    subgraph Database["Database Layer"]
+        MongoDB[(MongoDB Atlas)]
+        
+        subgraph Collections["Collections"]
+            UserCollection[Users]
+            PoolCollection[Pools]
+            LoanCollection[Loans]
+            ClaimCollection[Claims]
+            CreditCollection[Credit History]
+            PaymentCollection[Payment Plans]
+            CampaignCollection[Campaigns]
+            BountyCollection[Bug Reports]
+        end
+        
+        IPFS[(IPFS - Pinata)]
+        IPFSData[Documents, KYC, Proofs]
+    end
+    
+    subgraph Blockchain["Blockchain Layer - Hardhat Network (Port 8545)"]
+        HardhatNode[Hardhat Local Node<br/>Chain ID: 1337]
+        
+        subgraph CoreContracts["Core Contracts"]
+            UserRegistry[UserRegistry.sol<br/>User Management & KYC]
+            CreditScore[CreditScore.sol<br/>Credit Scoring 0-900]
+        end
+        
+        subgraph FinancialContracts["Financial Contracts"]
+            InsurancePool[InsurancePool.sol<br/>Pooled Insurance & Claims]
+            MicroLoan[MicroLoan.sol<br/>4 Loan Types]
+            PaymentPlan[PaymentPlan.sol<br/>BNPL & SNPL]
+        end
+        
+        subgraph CommunityContracts["Community Contracts"]
+            CrowdFunding[CrowdFunding.sol<br/>Medical Crowdfunding]
+            BugBounty[BugBounty.sol<br/>Security Program]
+        end
+    end
+    
+    %% Client to Frontend
+    Browser --> Pages
+    MetaMask --> Web3Provider
+    
+    %% Frontend Internal
+    Pages --> Components
+    Components --> StateManagement
+    Components --> UIFramework
+    Components --> Web3Provider
+    
+    %% Frontend to Backend (REST API)
+    Pages <-->|HTTP/REST| APIGateway
+    Components <-->|HTTP/REST| APIGateway
+    
+    %% Frontend to Blockchain (JSON-RPC)
+    Web3Provider <-->|JSON-RPC| HardhatNode
+    
+    %% Backend API Gateway to Middleware
+    APIGateway --> AuthMiddleware
+    APIGateway --> ValidationMiddleware
+    APIGateway --> ErrorHandler
+    
+    %% Backend Middleware to Services
+    AuthMiddleware --> AuthService
+    AuthMiddleware --> PoolService
+    AuthMiddleware --> LoanService
+    AuthMiddleware --> ClaimService
+    AuthMiddleware --> CreditService
+    AuthMiddleware --> PaymentService
+    AuthMiddleware --> CrowdFundingService
+    AuthMiddleware --> BountyService
+    AuthMiddleware --> IPFSService
+    AuthMiddleware --> AIService
+    
+    %% Backend Services to MongoDB
+    AuthService <--> UserCollection
+    PoolService <--> PoolCollection
+    LoanService <--> LoanCollection
+    ClaimService <--> ClaimCollection
+    CreditService <--> CreditCollection
+    PaymentService <--> PaymentCollection
+    CrowdFundingService <--> CampaignCollection
+    BountyService <--> BountyCollection
+    
+    %% Backend to IPFS
+    IPFSService <--> IPFS
+    IPFS --> IPFSData
+    
+    %% Blockchain Network to Contracts
+    HardhatNode --> UserRegistry
+    HardhatNode --> CreditScore
+    HardhatNode --> InsurancePool
+    HardhatNode --> MicroLoan
+    HardhatNode --> PaymentPlan
+    HardhatNode --> CrowdFunding
+    HardhatNode --> BugBounty
+    
+    %% Contract Dependencies
+    UserRegistry -.validates.-> CreditScore
+    
+    CreditScore -.used by.-> InsurancePool
+    CreditScore -.used by.-> MicroLoan
+    CreditScore -.used by.-> PaymentPlan
+    CreditScore -.used by.-> CrowdFunding
+    
+    UserRegistry -.validates.-> InsurancePool
+    UserRegistry -.validates.-> MicroLoan
+    UserRegistry -.validates.-> PaymentPlan
+    UserRegistry -.validates.-> CrowdFunding
+    UserRegistry -.validates.-> BugBounty
+    
+    InsurancePool -.pool backing.-> MicroLoan
+    
+    %% Styling
+    classDef frontendStyle fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
+    classDef backendStyle fill:#68a063,stroke:#333,stroke-width:2px
+    classDef dbStyle fill:#4db33d,stroke:#333,stroke-width:2px
+    classDef blockchainStyle fill:#f0b90b,stroke:#333,stroke-width:2px,color:#000
+    classDef clientStyle fill:#9333ea,stroke:#333,stroke-width:2px
+    
+    class Browser,MetaMask clientStyle
+    class Pages,Components,Web3Provider,StateManagement,UIFramework frontendStyle
+    class APIGateway,AuthService,PoolService,LoanService,ClaimService,CreditService,PaymentService,CrowdFundingService,BountyService,IPFSService,AIService,AuthMiddleware,ValidationMiddleware,ErrorHandler backendStyle
+    class MongoDB,UserCollection,PoolCollection,LoanCollection,ClaimCollection,CreditCollection,PaymentCollection,CampaignCollection,BountyCollection,IPFS,IPFSData dbStyle
+    class HardhatNode,UserRegistry,CreditScore,InsurancePool,MicroLoan,PaymentPlan,CrowdFunding,BugBounty blockchainStyle
