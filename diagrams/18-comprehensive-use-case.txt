@@ -1,0 +1,82 @@
+graph TB
+    subgraph Platform["De-Medical Platform"]
+        subgraph UserMgmt["User Management"]
+            UC1[Register Account]
+            UC2[Login with Wallet]
+            UC3[Upload KYC]
+        end
+        
+        subgraph Pools["Insurance Pools"]
+            UC4[Create Pool]
+            UC5[Join Pool]
+            UC6[Submit Claim]
+            UC7[Vote on Claim]
+        end
+        
+        subgraph Loans["Micro Loans"]
+            UC8[Apply Unsecured Loan]
+            UC9[Apply Collateralized Loan]
+            UC10[Apply Co-Signed Loan]
+            UC11[Apply Pool-Backed Loan]
+            UC12[Repay Loan]
+        end
+        
+        subgraph Credit["Credit Management"]
+            UC13[View Credit Score]
+            UC14[Track History]
+        end
+        
+        subgraph Payment["Payment Plans"]
+            UC15[Create BNPL]
+            UC16[Create SNPL]
+            UC17[Pay Installment]
+        end
+        
+        subgraph Bounty["Bug Bounty"]
+            UC18[Register Researcher]
+            UC19[Submit Report]
+            UC20[Award Bounty]
+        end
+        
+        subgraph Crowd["Crowdfunding"]
+            UC21[Create Campaign]
+            UC22[Contribute]
+            UC23[Vote Approval]
+            UC24[Release Milestone]
+            UC25[Request Refund]
+        end
+    end
+    
+    User((User)) --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+    User --> UC7
+    User --> UC8
+    User --> UC9
+    User --> UC10
+    User --> UC11
+    User --> UC12
+    User --> UC13
+    User --> UC14
+    User --> UC15
+    User --> UC16
+    User --> UC17
+    User --> UC21
+    User --> UC22
+    User --> UC23
+    User --> UC24
+    User --> UC25
+    
+    Admin((Admin)) --> UC3
+    Admin --> UC7
+    Admin --> UC20
+    
+    Researcher((Researcher)) --> UC18
+    Researcher --> UC19
+    
+    style User fill:#0ea5e9
+    style Admin fill:#d946ef
+    style Researcher fill:#f59e0b

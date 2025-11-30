@@ -1,0 +1,78 @@
+graph TB
+    subgraph Frontend["Frontend Layer (Port 3000)"]
+        NextJS[Next.js 14]
+        Components[React Components]
+        Web3[ethers.js]
+        UI[TailwindCSS]
+    end
+    
+    subgraph Backend["Backend Layer (Port 5000)"]
+        Express[Express Server]
+        Auth[Auth Service]
+        Pool[Pool Service]
+        Loan[Loan Service]
+        IPFS_Service[IPFS Service]
+        AI[AI Service]
+        Crowd[CrowdFunding Service]
+    end
+    
+    subgraph Database["Database Layer"]
+        Mongo[(MongoDB)]
+        IPFS_Storage[(IPFS/Pinata)]
+    end
+    
+    subgraph Blockchain["Blockchain Layer (Port 8545)"]
+        Hardhat[Hardhat Network]
+        UserReg[UserRegistry]
+        Credit[CreditScore]
+        PoolContract[InsurancePool]
+        LoanContract[MicroLoan]
+        Payment[PaymentPlan]
+        Bounty[BugBounty]
+        CrowdContract[CrowdFunding]
+    end
+    
+    NextJS --> Components
+    Components --> Web3
+    Components --> UI
+    
+    NextJS <-->|REST API| Express
+    Web3 <-->|JSON-RPC| Hardhat
+    
+    Express --> Auth
+    Express --> Pool
+    Express --> Loan
+    Express --> IPFS_Service
+    Express --> AI
+    Express --> Crowd
+    
+    Auth <--> Mongo
+    Pool <--> Mongo
+    Loan <--> Mongo
+    Crowd <--> Mongo
+    IPFS_Service <--> IPFS_Storage
+    
+    Hardhat --> UserReg
+    Hardhat --> Credit
+    Hardhat --> PoolContract
+    Hardhat --> LoanContract
+    Hardhat --> Payment
+    Hardhat --> Bounty
+    Hardhat --> CrowdContract
+    
+    UserReg -.depends.-> Credit
+    PoolContract -.uses.-> UserReg
+    PoolContract -.uses.-> Credit
+    LoanContract -.uses.-> UserReg
+    LoanContract -.uses.-> Credit
+    LoanContract -.uses.-> PoolContract
+    Payment -.uses.-> UserReg
+    Payment -.uses.-> Credit
+    Bounty -.uses.-> UserReg
+    CrowdContract -.uses.-> UserReg
+    CrowdContract -.uses.-> Credit
+    
+    style NextJS fill:#61dafb,color:#000
+    style Express fill:#68a063
+    style Mongo fill:#4db33d
+    style Hardhat fill:#f0b90b,color:#000

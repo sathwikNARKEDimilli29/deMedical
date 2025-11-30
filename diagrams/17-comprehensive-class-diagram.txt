@@ -1,0 +1,123 @@
+classDiagram
+    %% Smart Contracts
+    class UserRegistry {
+        +mapping users
+        +mapping kycVerifiers
+        +registerUser(ipfsHash)
+        +verifyKYC(address)
+        +isUserKYCVerified() bool
+        +getUserInfo() User
+    }
+    
+    class CreditScore {
+        +mapping creditScores
+        +MIN_SCORE: 0
+        +MAX_SCORE: 900
+        +DEFAULT_SCORE: 500
+        +initializeCreditScore()
+        +recordPayment(onTime)
+        +recordLoan(repaid)
+        +getCreditScore() uint256
+        +getCreditTier() string
+    }
+    
+    class InsurancePool {
+        +mapping pools
+        +mapping poolMembers
+        +uint256 poolCount
+        +createPool() uint256
+        +joinPool(poolId) payable
+        +submitClaim() uint256
+        +voteClaim(claimId, approve)
+        +processClaim(claimId)
+    }
+    
+    class MicroLoan {
+        +mapping loans
+        +mapping collaterals
+        +mapping coSignerApprovals
+        +uint256 loanCount
+        +requestLoan() uint256
+        +requestLoanWithCollateral() uint256
+        +requestLoanWithCoSigner() uint256
+        +requestPoolBackedLoan() uint256
+        +repayLoan(loanId) payable
+        +calculateInterestRate() uint256
+    }
+    
+    class PaymentPlan {
+        +mapping bnplPlans
+        +mapping snplPlans
+        +uint256 bnplCount
+        +createBNPL() uint256
+        +payBNPLInstallment() payable
+        +createSNPL() uint256
+        +depositToSNPL() payable
+    }
+    
+    class BugBounty {
+        +mapping researchers
+        +mapping reports
+        +uint256 reportCount
+        +registerResearcher(name)
+        +submitReport() uint256
+        +validateReport(reportId)
+        +awardBounty(reportId) payable
+    }
+    
+    class CrowdFunding {
+        +mapping campaigns
+        +mapping milestones
+        +uint256 campaignCount
+        +createCampaign() uint256
+        +voteForCampaignApproval()
+        +contribute() payable
+        +releaseMilestone()
+        +requestRefund()
+        +finalizeCampaign()
+    }
+    
+    %% Data Structures
+    class Pool {
+        +uint256 id
+        +string name
+        +uint256 targetAmount
+        +PoolType poolType
+        +bool isActive
+    }
+    
+    class Loan {
+        +uint256 id
+        +address borrower
+        +uint256 principal
+        +uint256 interestRate
+        +LoanType loanType
+        +LoanStatus status
+    }
+    
+    class Campaign {
+        +uint256 campaignId
+        +address creator
+        +uint256 goalAmount
+        +uint256 raisedAmount
+        +CampaignStatus status
+        +bool allOrNothing
+    }
+    
+    %% Relationships
+    UserRegistry <|-- CreditScore : depends on
+    UserRegistry <|-- InsurancePool : depends on
+    UserRegistry <|-- MicroLoan : depends on
+    UserRegistry <|-- PaymentPlan : depends on
+    UserRegistry <|-- BugBounty : depends on
+    UserRegistry <|-- CrowdFunding : depends on
+    
+    CreditScore <|-- InsurancePool : uses
+    CreditScore <|-- MicroLoan : uses
+    CreditScore <|-- PaymentPlan : uses
+    CreditScore <|-- CrowdFunding : uses
+    
+    InsurancePool <|-- MicroLoan : pool backing
+    InsurancePool "1" *-- "many" Pool : manages
+    MicroLoan "1" *-- "many" Loan : manages
+    CrowdFunding "1" *-- "many" Campaign : manages

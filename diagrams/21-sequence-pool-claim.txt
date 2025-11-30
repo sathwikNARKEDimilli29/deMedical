@@ -1,0 +1,41 @@
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant MetaMask
+    participant Backend
+    participant PoolContract
+    participant UserRegistry
+    
+    User->>Frontend: Browse pools
+    Frontend->>Backend: GET /api/pools
+    Backend-->>Frontend: Pool list
+    
+    User->>Frontend: Select pool & enter amount
+    Frontend->>MetaMask: Request joinPool() tx
+    
+    MetaMask->>PoolContract: joinPool(poolId) {value}
+    PoolContract->>UserRegistry: isKYCVerified(user)
+    UserRegistry-->>PoolContract: true
+    
+    PoolContract->>PoolContract: Add member
+    PoolContract->>PoolContract: Update balance
+    PoolContract-->>MetaMask: Success
+    
+    Frontend->>Backend: POST /api/pools/:id/join
+    Backend-->>Frontend: Updated pool data
+    Frontend->>User: Joined successfully!
+    
+    Note over User,PoolContract: Later: Medical Emergency
+    
+    User->>Frontend: Submit claim with docs
+    Frontend->>Backend: Upload to IPFS
+    Backend-->>Frontend: IPFS hash
+    
+    Frontend->>MetaMask: submitClaim() tx
+    MetaMask->>PoolContract: submitClaim(poolId, amount, hash)
+    PoolContract->>PoolContract: Create claim (PENDING)
+    PoolContract-->>Frontend: Claim ID
+    
+    Frontend->>Backend: POST /api/claims
+    Backend-->>Frontend: Claim submitted
+    Frontend->>User: Claim under review

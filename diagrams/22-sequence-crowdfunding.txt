@@ -1,0 +1,56 @@
+sequenceDiagram
+    actor Creator
+    participant Frontend
+    participant Backend
+    participant IPFS
+    participant CrowdContract
+    participant UserRegistry
+    participant CreditScore
+    
+    Creator->>Frontend: Create campaign form
+    Creator->>Frontend: Upload medical docs
+    Frontend->>Backend: POST /api/ipfs/upload
+    Backend->>IPFS: Upload
+    IPFS-->>Backend: Hash
+    Backend-->>Frontend: Document hash
+    
+    Creator->>Frontend: Define milestones
+    Creator->>Frontend: Submit campaign
+    
+    Frontend->>CrowdContract: createCampaign(...)
+    CrowdContract->>UserRegistry: isKYCVerified(creator)
+    UserRegistry-->>CrowdContract: true
+    CrowdContract->>CrowdContract: Status: PENDING_APPROVAL
+    CrowdContract-->>Frontend: Campaign ID
+    
+    Frontend->>Backend: POST /api/crowdfunding
+    Backend-->>Frontend: Campaign created
+    
+    Note over Creator,CrowdContract: Community votes for approval
+    
+    actor Voter
+    Voter->>Frontend: Browse pending campaigns
+    Voter->>Frontend: Vote approve
+    Frontend->>CrowdContract: voteForCampaignApproval(id, true)
+    CrowdContract->>CrowdContract: Check threshold (60%)
+    CrowdContract->>CrowdContract: Status: ACTIVE
+    
+    Note over Creator,CrowdContract: Backers contribute
+    
+    actor Backer
+    Backer->>Frontend: View campaign
+    Backer->>CrowdContract: contribute(id) {value}
+    CrowdContract->>CrowdContract: Update raisedAmount
+    CrowdContract->>CrowdContract: Check goal reached
+    CrowdContract->>CrowdContract: Status: SUCCESSFUL
+    CrowdContract->>CreditScore: updateScore(creator, +10)
+    
+    Note over Creator,CrowdContract: Creator releases milestone
+    
+    Creator->>Frontend: Upload proof
+    Frontend->>IPFS: Upload
+    IPFS-->>Frontend: Proof hash
+    Creator->>CrowdContract: releaseMilestone(id, 0, hash)
+    CrowdContract->>CrowdContract: Validate milestone
+    CrowdContract->>Creator: Transfer milestone funds
+    CrowdContract-->>Frontend: Milestone released

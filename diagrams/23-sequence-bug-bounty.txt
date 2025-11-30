@@ -1,0 +1,37 @@
+sequenceDiagram
+    actor Researcher
+    participant Frontend
+    participant Backend
+    participant BugBountyContract
+    participant UserRegistry
+    
+    Researcher->>Frontend: Register as researcher
+    Frontend->>BugBountyContract: registerResearcher(name)
+    BugBountyContract->>BugBountyContract: Create researcher profile
+    BugBountyContract-->>Frontend: Registered
+    
+    Researcher->>Frontend: Submit bug report
+    Researcher->>Frontend: Fill details (severity, description)
+    Frontend->>Backend: Upload proof to IPFS
+    Backend-->>Frontend: IPFS hash
+    
+    Frontend->>BugBountyContract: submitReport(severity, title, desc, hash)
+    BugBountyContract->>BugBountyContract: Status: SUBMITTED
+    BugBountyContract-->>Frontend: Report ID
+    
+    Note over Researcher,UserRegistry: Admin reviews
+    
+    actor Admin
+    Admin->>Frontend: Review report
+    Admin->>BugBountyContract: validateReport(reportId)
+    BugBountyContract->>BugBountyContract: Status: VALIDATED
+    
+    Admin->>BugBountyContract: approveReport(reportId)
+    BugBountyContract->>BugBountyContract: Status: APPROVED
+    
+    Admin->>BugBountyContract: awardBounty(reportId) {value}
+    BugBountyContract->>Researcher: Transfer reward
+    BugBountyContract->>BugBountyContract: Update leaderboard
+    BugBountyContract-->>Frontend: Bounty awarded
+    
+    Frontend->>Researcher: Reward received!
