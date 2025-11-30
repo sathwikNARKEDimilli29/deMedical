@@ -121,7 +121,7 @@ event UserRegistered(address indexed user, uint256 indexed timestamp);
 ## Contract 2: CreditScore.sol
 
 ### Summary
-Dynamic credit scoring with range 300-900, influenced by payment and loan behavior.
+Dynamic credit scoring with range 0-900, influenced by payment and loan behavior.
 
 ### Security Analysis
 

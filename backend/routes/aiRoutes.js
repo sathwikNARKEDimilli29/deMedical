@@ -7,7 +7,7 @@ const aiResponses = {
   pools: "I can help you find the right insurance pool! We have Health, Life, Accident, and Critical Illness pools. Each pool allows members to contribute proportionally and receive proportional claims. What type of coverage are you looking for?",
   claims: "To submit a claim, you'll need to:\n1. Be an active member of a pool\n2. Upload supporting medical documents\n3. Get approval from other pool members (60% threshold)\n\nWould you like me to guide you through the process?",
   loans: "Our micro-loans for healthcare are based on your credit score. Better scores get lower interest rates (5-25% APR). Loans range from 0.01 to 10 ETH with 7-365 day terms. Check your credit score to see what you qualify for!",
-  credit: "Your credit score (300-900) is calculated based on:\n- Loan repayment history (40%)\n- Payment punctuality (30%)\n- Credit history length (20%)\n- Total successful loans (10%)\n\nMaintaining good payment habits will improve your score!",
+  credit: "Your credit score (0-900) is calculated based on:\n- Loan repayment history (40%)\n- Payment punctuality (30%)\n- Credit history length (20%)\n- Total successful loans (10%)\n\nMaintaining good payment habits will improve your score!",
   bnpl: "Buy Now Pay Later lets you split medical expenses into 2-12 monthly installments. Interest rates depend on your credit score (3-15%). You'll need a credit score of at least 450 to qualify.",
   snpl: "Save Now Pay Later helps you save for future medical expenses! Set a target amount and monthly deposit for 3-24 months. Once you reach your goal, withdraw the funds for your medical needs."
 };
