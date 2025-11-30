@@ -11,7 +11,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 export default function Loans() {
   const { account } = useWeb3();
   const [loans, setLoans] = useState([]);
-  const [creditScore, setCreditScore] = useState(500);
+  const [creditScore, setCreditScore] = useState(450);
   const [loading, setLoading] = useState(true);
   const [selectedLoanType, setSelectedLoanType] = useState('unsecured');
   const [showLoanForm, setShowLoanForm] = useState(false);
@@ -25,7 +25,7 @@ export default function Loans() {
         ]);
         
         setLoans(loansRes.data);
-        setCreditScore(creditRes.data.currentScore || 500);
+        setCreditScore(creditRes.data.currentScore || 450);
       } catch (error) {
         console.error('Failed to load data:', error);
       } finally {
@@ -45,7 +45,11 @@ export default function Loans() {
     if (score >= 700) return 8;
     if (score >= 600) return 12;
     if (score >= 500) return 15;
-    return 20;
+    if (score >= 400) return 18;
+    if (score >= 300) return 20;
+    if (score >= 200) return 22;
+    if (score >= 100) return 24;
+    return 25;
   };
 
   const loanTypes = {
@@ -55,7 +59,7 @@ export default function Loans() {
       discount: 0,
       color: 'gray',
       description: 'Traditional credit-based lending',
-      requirements: 'Credit score ≥ 400',
+      requirements: 'Credit score ≥ 300',
       pros: ['No collateral needed', 'Quick approval'],
       cons: ['Highest interest rate', 'Credit score dependent']
     },
@@ -65,7 +69,7 @@ export default function Loans() {
       discount: 35,
       color: 'blue',
       description: '50% collateral required',
-      requirements: 'Credit score ≥ 400 + 50% collateral',
+      requirements: 'Credit score ≥ 300 + 50% collateral',
       pros: ['35% interest discount', 'Collateral returned on repayment'],
       cons: ['Requires upfront ETH', 'Collateral seized if default']
     },
@@ -75,7 +79,7 @@ export default function Loans() {
       discount: 20,
       color: 'purple',
       description: 'Co-signer backing required',
-      requirements: 'Credit score ≥ 400 + Co-signer (credit ≥ 600)',
+      requirements: 'Credit score ≥ 300 + Co-signer (credit ≥ 600)',
       pros: ['20% interest discount', 'Build credit together'],
       cons: ['Co-signer liable if default', 'Affects both credit scores']
     },
@@ -85,7 +89,7 @@ export default function Loans() {
       discount: 25,
       color: 'green',
       description: 'Insurance pool coverage',
-      requirements: 'Credit score ≥ 400 + Active pool membership',
+      requirements: 'Credit score ≥ 300 + Active pool membership',
       pros: ['25% interest discount', 'Pool covers defaults'],
       cons: ['Pool must have funds', 'Blacklisted if default']
     }

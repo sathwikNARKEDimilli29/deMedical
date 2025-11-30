@@ -25,9 +25,9 @@ contract CreditScore is ReentrancyGuard {
     mapping(address => CreditData) public creditScores;
     mapping(address => bool) public authorizedContracts;
     
-    uint256 public constant MIN_SCORE = 300;
+    uint256 public constant MIN_SCORE = 0;
     uint256 public constant MAX_SCORE = 900;
-    uint256 public constant DEFAULT_SCORE = 500;
+    uint256 public constant DEFAULT_SCORE = 450;
     
     event CreditScoreUpdated(address indexed user, uint256 newScore);
     event PaymentRecorded(address indexed user, bool onTime);
@@ -147,9 +147,10 @@ contract CreditScore is ReentrancyGuard {
         if (score == 0) score = DEFAULT_SCORE;
         
         if (score >= 750) return "Excellent";
-        if (score >= 650) return "Good";
-        if (score >= 550) return "Fair";
-        if (score >= 450) return "Poor";
-        return "Very Poor";
+        if (score >= 600) return "Good";
+        if (score >= 450) return "Fair";
+        if (score >= 300) return "Poor";
+        if (score >= 150) return "Very Poor";
+        return "Critical";
     }
 }

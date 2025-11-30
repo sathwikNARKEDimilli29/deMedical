@@ -22,7 +22,7 @@ const creditHistorySchema = new mongoose.Schema({
   },
   tier: {
     type: String,
-    enum: ['Excellent', 'Good', 'Fair', 'Poor', 'Very Poor']
+    enum: ['Excellent', 'Good', 'Fair', 'Poor', 'Very Poor', 'Critical']
   }
 }, { timestamps: true });
 

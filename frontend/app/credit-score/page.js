@@ -38,7 +38,8 @@ export default function CreditScore() {
       'Good': 'from-blue-500 to-cyan-500',
       'Fair': 'from-yellow-500 to-orange-500',
       'Poor': 'from-orange-500 to-red-500',
-      'Very Poor': 'from-red-500 to-pink-500'
+      'Very Poor': 'from-red-500 to-pink-500',
+      'Critical': 'from-red-700 to-red-900'
     };
     return colors[tier] || colors['Fair'];
   };
@@ -51,7 +52,7 @@ export default function CreditScore() {
     );
   }
 
-  const score = creditData?.currentScore || 500;
+  const score = creditData?.currentScore || 450;
   const tier = creditData?.tier || 'Fair';
   const factors = creditData?.factors || {};
 
@@ -75,7 +76,7 @@ export default function CreditScore() {
           />
         </div>
         <div className="flex justify-between text-xs text-dark-500 mt-2">
-          <span>300</span>
+          <span>0</span>
           <span>900</span>
         </div>
       </div>

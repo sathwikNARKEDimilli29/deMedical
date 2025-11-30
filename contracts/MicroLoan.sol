@@ -49,7 +49,7 @@ contract MicroLoan is ReentrancyGuard {
     mapping(address => bool) public blacklistedFromPoolLoans;
     
     uint256 public loanCount;
-    uint256 public constant MIN_CREDIT_SCORE = 400;
+    uint256 public constant MIN_CREDIT_SCORE = 300;
     uint256 public constant MAX_LOAN_AMOUNT = 10 ether;
     uint256 public constant MIN_LOAN_AMOUNT = 0.01 ether;
     uint256 public constant COLLATERAL_RATIO = 50; // 50% collateral required
@@ -370,7 +370,10 @@ contract MicroLoan is ReentrancyGuard {
         if (_creditScore >= 700) return 800; // 8%
         if (_creditScore >= 600) return 1200; // 12%
         if (_creditScore >= 500) return 1500; // 15%
-        if (_creditScore >= 400) return 2000; // 20%
+        if (_creditScore >= 400) return 1800; // 18%
+        if (_creditScore >= 300) return 2000; // 20%
+        if (_creditScore >= 200) return 2200; // 22%
+        if (_creditScore >= 100) return 2400; // 24%
         return 2500; // 25%
     }
     

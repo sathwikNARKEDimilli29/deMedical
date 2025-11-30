@@ -11,7 +11,7 @@ router.get('/:userAddress', async (req, res) => {
     if (!credit) {
       credit = new CreditHistory({
         userAddress: req.params.userAddress.toLowerCase(),
-        currentScore: 500,
+        currentScore: 450,
         tier: 'Fair',
         factors: {
           totalLoans: 0,
@@ -21,7 +21,7 @@ router.get('/:userAddress', async (req, res) => {
           latePayments: 0,
           accountAge: 0
         },
-        scoreHistory: [{ score: 500, timestamp: new Date(), reason: 'Initial score' }]
+        scoreHistory: [{ score: 450, timestamp: new Date(), reason: 'Initial score' }]
       });
       await credit.save();
     }

@@ -66,17 +66,19 @@ De-Medical revolutionizes healthcare insurance by:
 ### 2. CreditScore.sol
 **Purpose**: On-chain credit scoring system (0-900 scale)
 **Scoring**: 40% loan repayment, 30% payment punctuality, 20% credit history, 10% successful loans
-**Tiers**: Excellent (750-900), Good (650-749), Fair (550-649), Poor (450-549), Very Poor (300-449)
+**Tiers**: Excellent (750-900), Good (600-749), Fair (450-599), Poor (300-449), Very Poor (150-299), Critical (0-149)
+**Governance**: Dynamic scoring based on repayment behavior reinforces trust and discipline
 
 ### 3. InsurancePool.sol
 **Purpose**: Pooled insurance with democratic governance
 **Pool Types**: HEALTH, LIFE, ACCIDENT, CRITICAL_ILLNESS
 **Novel Feature**: Proportional payouts based on contribution percentage, 60% approval threshold
+**Governance**: Claims settled through 60% community consensus, removing centralized denial
 
 ### 4. MicroLoan.sol
 **Purpose**: Healthcare micro-loans with credit-based rates
-**Parameters**: 0.01-10 ETH, 7-365 days, Min credit 400
-**Base Interest Rates**: 5% (800+), 8% (700-799), 12% (600-699), 15% (500-599), 20% (400-499), 25% (<400)
+**Parameters**: 0.01-10 ETH, 7-365 days, Min credit 300
+**Base Interest Rates**: 5% (800+), 8% (700-799), 12% (600-699), 15% (500-599), 18% (400-499), 20% (300-399), 22% (200-299), 24% (100-199), 25% (<100)
 **Loan Types**: 
   1. Unsecured (standard rates)
   2. Collateralized (35% discount, requires 50% collateral)
@@ -117,7 +119,7 @@ De-Medical revolutionizes healthcare insurance by:
 **Pool**: poolId (UK), name, description, creator, poolType (enum), targetAmount, currentAmount, memberCount, maxMembers, isActive, members[], analytics
 **Claim**: claimId (UK), poolId (FK), claimant (FK), amount, description, documents, status (enum), votes[], approvalCount, rejectionCount
 **Loan**: loanId (UK), borrower (FK), principal, interestRate, duration, amountRepaid, status (enum), purpose, documents, repayments[]
-**CreditHistory**: userAddress (UK), currentScore (300-900), scoreHistory[], factors, tier (enum)
+**CreditHistory**: userAddress (UK), currentScore (0-900), scoreHistory[], factors, tier (enum)
 **CrowdFunding**: campaignId (UK), creator (FK), title, description, category (enum), goalAmount, raisedAmount, deadline, documents[], status (enum), isApproved, allOrNothing, milestones[], contributors[], approvalVotes[], analytics
 
 ---

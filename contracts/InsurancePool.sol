@@ -8,6 +8,13 @@ import "./CreditScore.sol";
 /**
  * @title InsurancePool
  * @dev Manages insurance pools with proportional contributions and claims
+ * 
+ * GOVERNANCE AND INCENTIVES:
+ * - Claims are settled through proportional distribution based on member contributions
+ * - 60% community consensus required for claim approval (APPROVAL_THRESHOLD)
+ * - Removes centralized denial through democratic voting
+ * - Members vote on claims, and approval requires 60% of votes
+ * - Proportional payout ensures fairness based on contribution percentage
  */
 contract InsurancePool is ReentrancyGuard {
     

@@ -636,21 +636,27 @@ De-Medical/
 - IPFS document storage
 
 ### CreditScore
-- On-chain credit score calculation
-- Multi-factor scoring algorithm
+- On-chain credit score calculation (0-900 scale)
+- Multi-factor scoring algorithm (40% repayment, 30% punctuality, 20% history, 10% successful loans)
 - Payment history tracking
+- **6 Credit Tiers**: Excellent (750-900), Good (600-749), Fair (450-599), Poor (300-449), Very Poor (150-299), Critical (0-149)
+- **Governance**: Dynamic scoring reinforces trust and discipline through repayment behavior
 
 ### InsurancePool
 - Pool creation and management
 - Proportional contributions
-- Democratic claim voting
-- Proportional payouts
+- **Democratic claim voting**: 60% community consensus required
+- Proportional payouts based on contribution percentage
+- **Governance**: Removes centralized denial through democratic voting
 
 ### MicroLoan
-- Healthcare loan issuance
-- Credit-based interest rates
-- Repayment tracking
-- Default management
+- Healthcare loan issuance (0.01-10 ETH, 7-365 days)
+- **Credit-based interest rates**: 9 tiers from 5% to 25% APR
+  - 800-900: 5% | 700-799: 8% | 600-699: 12% | 500-599: 15%
+  - 400-499: 18% | 300-399: 20% | 200-299: 22% | 100-199: 24% | 0-99: 25%
+- Minimum credit score: 300
+- Repayment tracking and default management
+- **4 Loan Types**: Unsecured, Collateralized (35% discount), Co-Signed (20% discount), Pool-Backed (25% discount)
 
 ### PaymentPlan
 - BNPL implementation
@@ -740,7 +746,7 @@ The platform now supports 4 types of loans with varying security levels and inte
 | **Co-Signed** | ❌ No | ✅ Required (credit ≥ 600) | ❌ No | 20% | 12.0% |
 | **Pool-Backed** | ❌ No | ❌ No | ✅ 120% coverage | 25% | 11.25% |
 
-*Example rate based on 500 credit score (15% base rate)
+*Example rate based on 450 credit score (18% base rate, new default)
 
 ### Collateralized Loans
 - Require 50% of loan amount as collateral (in ETH)

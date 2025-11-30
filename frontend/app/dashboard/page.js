@@ -18,7 +18,7 @@ export default function Dashboard() {
     pools: 0,
     claims: 0,
     loans: 0,
-    creditScore: 500
+    creditScore: 450
   });
   const [recommendations, setRecommendations] = useState([]);
 
@@ -50,12 +50,12 @@ export default function Dashboard() {
           pools: userPools.length,
           claims: claimsRes.data.length,
           loans: loansRes.data.length,
-          creditScore: creditRes.data.currentScore || 500
+          creditScore: creditRes.data.currentScore || 450
         });
 
         // Get AI recommendations
         const recRes = await axios.post(`${API_URL}/ai/recommend`, {
-          creditScore: creditRes.data.currentScore || 500,
+          creditScore: creditRes.data.currentScore || 450,
           hasLoans: loansRes.data.length > 0,
           poolMemberships: userPools.length
         });
