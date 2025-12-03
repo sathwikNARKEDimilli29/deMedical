@@ -13,6 +13,7 @@ const ipfsRoutes = require('./routes/ipfsRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const bugBountyRoutes = require('./routes/bugBountyRoutes');
 const crowdFundingRoutes = require('./routes/crowdFundingRoutes');
+const oracleRoutes = require('./routes/oracleRoutes');
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use('/api/ipfs', ipfsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/bug-bounty', bugBountyRoutes);
 app.use('/api/crowdfunding', crowdFundingRoutes);
+app.use('/api/oracle', oracleRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

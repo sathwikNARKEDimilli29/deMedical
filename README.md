@@ -6,6 +6,7 @@ A revolutionary blockchain-powered healthcare insurance platform featuring poole
 
 ### Core Features
 - **Pooled Insurance**: Join pools with proportional contributions and claims
+  - 🎯 **Schelling Point Voting**: Voters rewarded for honest consensus-aligned voting
 - **Enhanced Micro-Loans**: Healthcare loans with 4 types of security:
   - 🔓 **Unsecured Loans**: Traditional credit-based lending (5-25% APR)
   - 🔒 **Collateralized Loans**: 50% collateral requirement, 35% interest discount
@@ -18,14 +19,24 @@ A revolutionary blockchain-powered healthcare insurance platform featuring poole
 - **🐛 Bug Bounty Program**: Rewards for security researchers ($200 - $50,000)
 - **💚 Medical Crowdfunding**: Community-funded campaigns with milestone releases
 
+### Privacy & Security Features
+- **🔒 GDPR Compliance**: On-chain hashes only, PII stored off-chain with right to erasure
+- **🕵️ Zero-Knowledge Proofs**: Prove credentials without revealing sensitive data
+  - Example: Prove credit score > 600 without revealing exact score
+- **🔍 Oracle Verification**: Chainlink integration for medical document authentication
+- **🎲 Schelling Point Incentives**: Game-theoretic voting rewards for honest claim assessment
+
 ### Technical Features
-- Smart contracts built with Hardhat & Solidity (7 contracts)
+- Smart contracts built with Hardhat & Solidity (10 contracts)
 - Next.js 14 frontend with modern UI/UX
 - MongoDB database for off-chain data
 - IPFS integration for document storage
 - MetaMask wallet integration
 - RESTful API backend with Express.js
 - Comprehensive formal verification specifications
+- Privacy-by-design architecture (GDPR compliant)
+- Oracle integration (Chainlink + ZK-Email)
+- Zero-Knowledge Proof framework (research + stubs)
 
 ## 📋 Prerequisites
 
@@ -611,7 +622,10 @@ De-Medical/
 │   ├── MicroLoan.sol
 │   ├── PaymentPlan.sol
 │   ├── BugBounty.sol
-│   └── CrowdFunding.sol
+│   ├── CrowdFunding.sol
+│   ├── PrivacyCompliance.sol  # GDPR compliance & privacy documentation
+│   ├── ClaimOracle.sol        # Oracle verification (Chainlink + ZK-Email)
+│   └── ZKPVerifier.sol        # Zero-Knowledge Proof verification
 ├── scripts/               # Deployment scripts
 │   └── deploy.js
 ├── test/                  # Contract tests
@@ -619,12 +633,18 @@ De-Medical/
 ├── backend/               # Express.js backend
 │   ├── models/           # MongoDB schemas
 │   ├── routes/           # API routes
-│   ├── services/         # Business logic
+│   ├── services/         # Business logic (oracle, ZKP)
 │   └── server.js
 ├── frontend/              # Next.js frontend
 │   ├── app/              # Pages (App Router)
 │   ├── components/       # React components
 │   └── public/           # Static assets
+├── docs/                  # Documentation
+│   ├── 01-architecture-diagram.mermaid
+│   ├── 02-security-audit-report.md
+│   ├── 03-gas-optimization-report.md
+│   ├── 04-formal-verification.md
+│   └── 05-privacy-gdpr-compliance.md  # NEW: Privacy documentation
 ├── hardhat.config.js     # Hardhat configuration
 └── package.json          # Root dependencies
 ```
@@ -646,8 +666,59 @@ De-Medical/
 - Pool creation and management
 - Proportional contributions
 - **Democratic claim voting**: 60% community consensus required
+- **Schelling Point Mechanism**: Rewards for consensus-aligned voting
+- **Reward Pool**: Separate pool for voting incentives
 - Proportional payouts based on contribution percentage
 - **Governance**: Removes centralized denial through democratic voting
+
+### MicroLoan
+- Healthcare loan issuance (0.01-10 ETH, 7-365 days)
+- **Credit-based interest rates**: 9 tiers from 5% to 25% APR
+  - 800-900: 5% | 700-799: 8% | 600-699: 12% | 500-599: 15%
+  - 400-499: 18% | 300-399: 20% | 200-299: 22% | 100-199: 24% | 0-99: 25%
+- Minimum credit score: 300
+- Repayment tracking and default management
+- **4 Loan Types**: Unsecured, Collateralized (35% discount), Co-Signed (20% discount), Pool-Backed (25% discount)
+
+### PaymentPlan
+- BNPL implementation
+- SNPL savings plans
+- Installment tracking
+- Late fee mechanisms
+
+### BugBounty
+- Security vulnerability reporting
+- Researcher registration and rewards
+- Dynamic bounty allocation
+- Reputation leaderboard
+
+### CrowdFunding
+- Medical campaign creation
+- Milestone-based fund releases
+- Community approval voting
+- All-or-nothing or keep-it-all models
+- Transparent backer tracking
+- Credit score integration
+
+### PrivacyCompliance (NEW)
+- GDPR compliance documentation on-chain
+- Privacy policy versioning
+- Data processing transparency
+- Right to erasure tracking
+- On-chain vs off-chain data segregation
+
+### ClaimOracle (NEW)
+- Chainlink oracle integration for claim verification
+- ZK-Email verification interface
+- Simulation mode for development
+- Hospital API integration (production ready)
+- Anti-fraud mechanism for medical documents
+
+### ZKPVerifier (NEW)
+- Zero-Knowledge Proof verification framework
+- Credit score range proofs without disclosure
+- Age verification without revealing birthdate
+- Research implementation guide for production ZKP
 
 ### MicroLoan
 - Healthcare loan issuance (0.01-10 ETH, 7-365 days)

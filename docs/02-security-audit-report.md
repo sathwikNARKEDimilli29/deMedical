@@ -10,17 +10,17 @@
 
 ## Executive Summary
 
-This audit report covers the security analysis of five Solidity smart contracts comprising the Nishkama decentralized insurance platform. The audit focuses on identifying vulnerabilities, assessing code quality, and providing recommendations for security improvements.
+This audit report covers the security analysis of seven Solidity smart contracts comprising the Nishkama (De-Medical) decentralized healthcare insurance platform. The audit focuses on identifying vulnerabilities, assessing code quality, and providing recommendations for security improvements.
 
 ### Overall Assessment
 
 **Risk Rating**: MEDIUM  
-**Contracts Audited**: 5  
+**Contracts Audited**: 7  
 **Critical Issues**: 0  
 **High Issues**: 0  
-**Medium Issues**: 4  
-**Low Issues**: 6  
-**Informational**: 8  
+**Medium Issues**: 6  
+**Low Issues**: 9  
+**Informational**: 12  
 
 ### Recommendation
 
@@ -35,8 +35,10 @@ The contracts are generally well-written with proper use of OpenZeppelin librari
 1. **UserRegistry.sol** - User management and KYC verification
 2. **CreditScore.sol** - On-chain credit scoring system
 3. **InsurancePool.sol** - Pooled insurance with claims management
-4. **MicroLoan.sol** - Healthcare micro-lending
+4. **MicroLoan.sol** - Healthcare micro-lending with multiple loan types
 5. **PaymentPlan.sol** - BNPL and SNPL payment solutions
+6. **BugBounty.sol** - Security researcher incentive program
+7. **CrowdFunding.sol** - Medical expense crowdfunding with milestone releases
 
 ### Methodology
 
@@ -433,19 +435,6 @@ function emergencyWithdrawSNPL(uint256 planId) external nonReentrant {
 **Location**: BNPL logic  
 **Description**: Installment period hardcoded to 30 days.  
 **Recommendation**: Consider flexible periods (weekly, biweekly, monthly).
-
-### Recommendations
-
-1. ✅ Add plan cancellation mechanism
-2. ✅ Allow early SNPL withdrawal with penalty
-3. ✅ Implement flexible installment periods
-4. ✅ Add plan modification capability
-
----
-
-## Common Issues Across All Contracts
-
-### 1. Timestamp Dependency
 
 **Severity**: LOW  
 **Description**: Use of `block.timestamp` for time-based logic.  
