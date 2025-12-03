@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 interface IUserRegistry {
-    function isKYCVerified(address user) external view returns (bool);
+    function isUserKYCVerified(address user) external view returns (bool);
 }
 
 interface ICreditScore {
@@ -130,7 +130,7 @@ contract CrowdFunding is Ownable, ReentrancyGuard {
         bool _allOrNothing,
         Milestone[] memory _milestones
     ) external returns (uint256) {
-        require(userRegistry.isKYCVerified(msg.sender), "KYC verification required");
+        require(userRegistry.isUserKYCVerified(msg.sender), "KYC verification required");
         require(bytes(_title).length > 0, "Title required");
         require(_goalAmount > 0, "Goal must be positive");
         require(_durationDays >= 7 && _durationDays <= 365, "Duration must be 7-365 days");

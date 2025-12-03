@@ -27,7 +27,8 @@ describe("Nishkama Insurance Platform", function () {
     const MicroLoan = await ethers.getContractFactory("MicroLoan");
     microLoan = await MicroLoan.deploy(
       await userRegistry.getAddress(),
-      await creditScore.getAddress()
+      await creditScore.getAddress(),
+      await insurancePool.getAddress()
     );
     await microLoan.waitForDeployment();
     
@@ -316,8 +317,8 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should create a new campaign", async function () {
       const milestones = [
-        { description: "Initial consultation", amount: ethers.parseEther("1"), isReleased: false },
-        { description: "Surgery", amount: ethers.parseEther("4"), isReleased: false }
+        { description: "Initial consultation", amount: ethers.parseEther("1"), isReleased: false, releaseDate: 0, proofIpfsHash: "" },
+        { description: "Surgery", amount: ethers.parseEther("4"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -339,7 +340,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should fail without KYC verification", async function () {
       const milestones = [
-        { description: "Treatment", amount: ethers.parseEther("1"), isReleased: false }
+        { description: "Treatment", amount: ethers.parseEther("1"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       const [unverifiedUser] = await ethers.getSigners();
@@ -361,7 +362,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should allow community to vote for approval", async function () {
       const milestones = [
-        { description: "Treatment", amount: ethers.parseEther("2"), isReleased: false }
+        { description: "Treatment", amount: ethers.parseEther("2"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -387,7 +388,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should allow contributions to active campaign", async function () {
       const milestones = [
-        { description: "Surgery", amount: ethers.parseEther("3"), isReleased: false }
+        { description: "Surgery", amount: ethers.parseEther("3"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -416,7 +417,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should mark campaign as successful when goal reached", async function () {
       const milestones = [
-        { description: "Milestone 1", amount: ethers.parseEther("2"), isReleased: false }
+        { description: "Milestone 1", amount: ethers.parseEther("2"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -443,7 +444,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should allow creator to release milestone funds", async function () {
       const milestones = [
-        { description: "First milestone", amount: ethers.parseEther("1"), isReleased: false }
+        { description: "First milestone", amount: ethers.parseEther("1"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -476,7 +477,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should allow refund for failed all-or-nothing campaign", async function () {
       const milestones = [
-        { description: "Milestone", amount: ethers.parseEther("5"), isReleased: false }
+        { description: "Milestone", amount: ethers.parseEther("5"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -514,7 +515,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should allow campaign cancellation before contributions", async function () {
       const milestones = [
-        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false }
+        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -536,7 +537,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should prevent creator from voting on own campaign", async function () {
       const milestones = [
-        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false }
+        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
@@ -557,7 +558,7 @@ describe("Nishkama Insurance Platform", function () {
     
     it("Should update credit score on successful campaign", async function () {
       const milestones = [
-        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false }
+        { description: "Milestone", amount: ethers.parseEther("1"), isReleased: false, releaseDate: 0, proofIpfsHash: "" }
       ];
       
       await crowdFunding.connect(user1).createCampaign(
